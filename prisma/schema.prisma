@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model Wishlist {
+  id              Int       @default(autoincrement()) @id
+  updatedAt       DateTime  @updatedAt
+  name            String    @db.VarChar(255)
+  listOwner       String    @db.VarChar(255)
+}
+
+// One-to-many relationship with Wishlists.
+model WishlistItem {
+  id              Int       @default(autoincrement()) @id
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  title           String    @db.VarChar(255)
+  notes           String    @db.VarChar(1000)
+  productLink     String    @db.VarChar(1000)
+  productPrice    Decimal   @db.Decimal(19, 4)
+  purchased       Boolean   @db.Bit(1)
+  wishlistID      Int       @db.Int 
+}
+
+// One-to-may relationship with WishlistItems.
+model Image {
+  id              Int          @default(autoincrement()) @id
+  wishlistItemID  Int          @db.Int
+  imageName       String       @db.VarChar(255)
+}
