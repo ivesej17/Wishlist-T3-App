@@ -4,19 +4,26 @@ import { api } from '../utils/api';
 
 import '../styles/globals.css';
 
+import '@fortawesome/fontawesome-svg-core/styles.css';
+
+import { config } from '@fortawesome/fontawesome-svg-core';
+// Tell Font Awesome to skip adding the CSS automatically
+// since it's already imported above
+config.autoAddCss = false;
+
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 
 import { Montserrat } from '@next/font/google';
-import { pink } from '@mui/material/colors';
+import { purple } from '@mui/material/colors';
 
 const montserrat = Montserrat({ subsets: ['latin'] });
 
 export const theme = createTheme({
     palette: {
         primary: {
-            main: pink[200],
+            main: purple[400],
         },
-        mode: 'dark',
+        mode: 'light',
     },
     typography: {
         fontFamily: montserrat.style.fontFamily,

@@ -11,27 +11,26 @@ const Home: NextPage = () => {
         <>
             <Head>
                 <title>Wishlist</title>
-                <meta
-                    name="description"
-                    content="Wishlist Application created by Elliott Ives using create-t3-app"
-                />
+                <meta name="description" content="Wishlist Application created by Elliott Ives using create-t3-app" />
             </Head>
 
             <main className="flex min-h-screen flex-col items-center justify-center">
                 <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1, transition: { duration: 0.4 } }}
-                    >
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.4 } }}>
                         <h1 className="text-5xl font-extrabold text-white">
-                            Welcome To{' '}
-                            <span className="text-[#f48fb1]">Wish</span>List
+                            Welcome To <span className="text-[#9511a7]">Wish</span>List
                         </h1>
                     </motion.div>
 
-                    <Button variant="contained" className="w-72">
-                        Sign In
-                    </Button>
+                    <Link href={'/wishlist-select'} className="no-underline">
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="glass-button flex w-72 cursor-pointer items-center justify-center rounded-3xl border-none p-2"
+                        >
+                            <h3>Sign In</h3>
+                        </motion.button>
+                    </Link>
                 </div>
             </main>
         </>
