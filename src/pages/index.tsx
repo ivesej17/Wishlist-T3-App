@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+import MotionButton from '../components/motion-button';
 
 // bg-gradient-to-b from-[#ecb1c5] to-[#15162c]
 
@@ -23,13 +24,7 @@ const Home: NextPage = () => {
                     </motion.div>
 
                     <Link href={'/wishlist-select'} className="no-underline">
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="glass-button flex w-72 cursor-pointer items-center justify-center rounded-3xl border-none p-2"
-                        >
-                            <h3>Sign In</h3>
-                        </motion.button>
+                        <MotionButton buttonText={'Sign In'}></MotionButton>
                     </Link>
                 </div>
             </main>

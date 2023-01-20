@@ -1,6 +1,7 @@
 import { faArrowCircleRight, faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NextPage } from 'next';
+import Link from 'next/link';
 import { api } from '../utils/api';
 
 const WishlistSelect: NextPage = () => {
@@ -17,26 +18,29 @@ const WishlistSelect: NextPage = () => {
                     {wishlists.data &&
                         wishlists.data.map((w) => {
                             return (
-                                <div
+                                <Link
+                                    href={'/wishlist'}
                                     key={w.id}
-                                    className="glass-button relative h-full w-1/3 cursor-pointer rounded-3xl p-5 shadow-md transition duration-200 hover:bg-purple-500"
+                                    className="glass-button relative h-full w-1/3 cursor-pointer rounded-3xl p-5 no-underline shadow-md transition duration-200 hover:bg-purple-500"
                                 >
-                                    <div className="flex flex-row gap-24">
-                                        <div className="flex flex-col">
-                                            <h1>{w.name}</h1>
-                                            <p className="m-0">By: {w.listOwner}</p>
-                                            <p className="m-0">Last updated on {w.updatedAt.toLocaleDateString()}</p>
-                                        </div>
+                                    <div>
+                                        <div className="flex flex-row justify-between">
+                                            <div className="flex flex-col">
+                                                <h1>{w.name}</h1>
+                                                <p className="m-0">By: {w.listOwner}</p>
+                                                <p className="m-0">Last updated on {w.updatedAt.toLocaleDateString()}</p>
+                                            </div>
 
-                                        <div className="flex items-center">
-                                            <FontAwesomeIcon icon={faArrowCircleRight} style={{ fontSize: 75, color: 'white' }} />
-                                        </div>
+                                            <div className="flex items-center">
+                                                <FontAwesomeIcon icon={faArrowCircleRight} style={{ fontSize: 75, color: 'white' }} />
+                                            </div>
 
-                                        <div className="absolute top-0 right-0 m-3">
-                                            <FontAwesomeIcon icon={faBell} style={{ fontSize: 25, color: 'white' }} />
+                                            <div className="absolute top-0 right-0 m-3">
+                                                <FontAwesomeIcon icon={faBell} style={{ fontSize: 25, color: 'white' }} />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             );
                         })}
                 </div>
