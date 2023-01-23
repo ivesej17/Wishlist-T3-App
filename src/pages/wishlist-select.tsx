@@ -27,7 +27,7 @@ const WishlistSelect: NextPage = () => {
                                         <div className="flex flex-row justify-between">
                                             <div className="flex flex-col">
                                                 <h1>{w.name}</h1>
-                                                <p className="m-0">By: {w.listOwner}</p>
+                                                <p className="m-0">By {w.listOwner}</p>
                                                 <p className="m-0">Last updated on {w.updatedAt.toLocaleDateString()}</p>
                                             </div>
 

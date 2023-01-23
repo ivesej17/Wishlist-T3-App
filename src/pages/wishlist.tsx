@@ -1,26 +1,28 @@
 import { NextPage } from 'next';
 import { api } from '../utils/api';
-import MotionButton from '../components/motion-button';
-import WishlistForm from '../components/wishlist-form';
-import Test from '../components/test';
+import GlassButton from '../components/glass-button';
+import WishlistFormModal from '../components/wishlist-form-modal';
+import { useState } from 'react';
 
 const wishlistID = 1;
 
 const WishList: NextPage = () => {
-    // const wishlistItems = api.wishlistItems.getAll.useQuery(wishlistID);
+    const wishlistItems = api.wishlistItems.getAll.useQuery(wishlistID);
+
+    const [modalIsVisible, setModalIsVisible] = useState(false);
 
     return (
         <>
             <main className="min-h-screen overflow-hidden">
-                {/* {wishlistItems.data && wishlistItems.data.length === 0 && (
-                    <div className="flex h-screen w-full flex-col items-center justify-center gap-5">
+                {wishlistItems.data && wishlistItems.data.length === 0 && (
+                    <div className="flex h-screen w-full flex-col items-center justify-center gap-5 overflow-hidden">
                         <h1>This wishlist is empty!</h1>
 
-                        <MotionButton buttonText={'Create New Entry'}></MotionButton>
+                        <GlassButton buttonText={'Create New Entry'} onClickFunction={() => setModalIsVisible(true)}></GlassButton>
                     </div>
-                )} */}
+                )};
 
-                <WishlistForm wishlistItem={undefined} />
+                <WishlistFormModal isVisible={modalIsVisible} wishlistItem={undefined} onClose={() => setModalIsVisible(false)} />
             </main>
         </>
     );
