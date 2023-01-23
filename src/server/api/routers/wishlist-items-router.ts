@@ -1,4 +1,3 @@
-import { Wishlist } from '@prisma/client';
 import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '../trpc';
@@ -6,8 +5,8 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 // Define schemas for input validation.
 const WishlistItemSchema = z.object({
     id: z.number(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
     title: z.string(),
     notes: z.string(),
     productLink: z.string(),

@@ -34,5 +34,5 @@ model WishlistItem {
 model Image {
     id             Int    @id @default(autoincrement())
     wishlistItemID Int    @db.Int
-    imageName      String @db.VarChar(255)
+    imageKey       String @db.VarChar(255)
 }
