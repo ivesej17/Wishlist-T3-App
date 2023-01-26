@@ -18,9 +18,8 @@ s3.config.update({
 
 // Create router with procedure definitions.
 export const s3_Router = createTRPCRouter({
-    getUploadURL: publicProcedure.query(async () => {
-        const rawBytes = randomBytes(16);
-        const key = rawBytes.toString('hex') + '.png';
+    getUploadURL: publicProcedure.mutation(async () => {
+        const key = randomBytes(16).toString('hex') + '.png';
 
         const requestParams: unknown = {
             Bucket: bucketName,

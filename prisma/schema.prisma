@@ -20,12 +20,12 @@ model Wishlist {
 // One-to-many relationship with Wishlists.
 model WishlistItem {
     id           Int      @id @default(autoincrement())
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    createdAt    DateTime @db.DateTime()
+    updatedAt    DateTime @db.DateTime()
     title        String   @db.VarChar(255)
     notes        String   @db.VarChar(1000)
     productLink  String   @db.VarChar(1000)
-    productPrice Decimal  @db.Decimal(19, 4)
+    productPrice Float    @db.Double  
     purchased    Boolean  @db.Bit(1)
     wishlistID   Int      @db.Int
 }

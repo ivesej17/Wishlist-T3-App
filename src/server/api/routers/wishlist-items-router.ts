@@ -4,7 +4,7 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 
 // Define schemas for input validation.
 const WishlistItemSchema = z.object({
-    id: z.number(),
+    id: z.number().optional(),
     createdAt: z.date(),
     updatedAt: z.date(),
     title: z.string(),
@@ -23,14 +23,14 @@ export const wishlistItemsRouter = createTRPCRouter({
         });
     }),
 
-    create: publicProcedure.input(WishlistItemSchema).mutation(({ ctx, input }) => {
-        input.id = 0;
-        ctx.prisma.wishlistItem.create({ data: { ...input } });
-    }),
+    update: publicProcedure.input(WishlistItemSchema).mutation(async ({ ctx, input }) => {
+        if (!input.id) {
+            await ctx.prisma.wishlistItem.create({ data: input });
+            return;
+        }
 
-    update: publicProcedure.input(WishlistItemSchema).mutation(({ ctx, input }) => {
-        ctx.prisma.wishlistItem.update({
-            data: { ...input },
+        await ctx.prisma.wishlistItem.update({
+            data: input,
             where: { id: input.id },
         });
     }),
