@@ -1,5 +1,5 @@
 import CurrencyInput from 'react-currency-input-field';
-import { Prisma, WishlistItem, WishlistItemPhoto } from '@prisma/client';
+import { WishlistItem, WishlistItemPhoto } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { fileListToBlobArray } from '../utils/convert-filelist';
@@ -15,7 +15,7 @@ type FormValues = {
 };
 
 // prettier-ignore
-const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistItem | undefined; images: Blob[] | undefined; onClose: () => void }> = (props) => {
+const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistItem | undefined; images: Blob[] | undefined; closeModal: () => void }> = (props) => {
     if (!props.isVisible) return null;
 
     const [infoTabSelected, setInfoTabSelected] = useState(true);
@@ -39,10 +39,10 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
         }, 3000);
     };
 
-
     const updateWishlistItem = api.wishlistItems.update.useMutation();
     const storeImageKey = api.wishlistItemPhotos.create.useMutation();
     const gets3UploadCredentials = api.s3.getUploadURL.useMutation();
+    const updateWishlist = api.wishlists.updateTimeLastChanged.useMutation();
 
     const { register, handleSubmit } = useForm<FormValues>({
         defaultValues: props.wishlistItem ? { ...props.wishlistItem } : { title: '', price: '', productLink: '', notes: '' },
@@ -63,9 +63,11 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
 
         const createdWishlistItem = await updateWishlistItem.mutateAsync(wishlistItem);
 
+        await updateWishlist.mutateAsync({id: 1, updatedAt: getCurrentDateISO()});
+
         if (!images) {
             showSuccessToast();
-            props.onClose();
+            props.closeModal();
             return;
         }
 
@@ -155,7 +157,7 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
 
                         {infoTabSelected && (
                             <div className="flex w-full flex-row justify-end gap-3">
-                                <button className="secondary-button" type="button" onClick={() => props.onClose()}>
+                                <button className="secondary-button" type="button" onClick={() => props.closeModal()}>
                                     Cancel
                                 </button>
                                 <button className="primary-button" type="submit">

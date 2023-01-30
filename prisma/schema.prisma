@@ -36,3 +36,12 @@ model WishlistItemPhoto {
     wishlistItemID Int    @db.Int
     imageKey       String @db.VarChar(255)
 }
+
+model WishlistItemComment {
+    id             Int      @id @default(autoincrement())
+    createdAt      DateTime @db.DateTime()
+    updatedAt      DateTime @db.DateTime()
+    comment        String   @db.VarChar(1000)
+    wishlistItemID Int      @db.Int
+    byUser         String   @db.VarChar(255)
+}

@@ -21,4 +21,11 @@ export const wishlistsRouter = createTRPCRouter({
         input.id = 0;
         ctx.prisma.wishlist.create({ data: { ...input } });
     }),
+
+    updateTimeLastChanged: publicProcedure.input(z.object({ id: z.number(), updatedAt: z.date() })).mutation(({ ctx, input }) => {
+        ctx.prisma.wishlist.update({
+            where: { id: input.id },
+            data: { updatedAt: input.updatedAt },
+        });
+    }),
 });

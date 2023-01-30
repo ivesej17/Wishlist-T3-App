@@ -3,6 +3,7 @@ import { wishlistsRouter } from './routers/wishlists-router';
 import { wishlistItemsRouter } from './routers/wishlist-items-router';
 import { s3_Router } from './routers/s3-router';
 import { wishlistItemPhotosRouter } from './routers/wishlist-item-photos-router';
+import { wishlistItemCommentsRouter } from './routers/wishlist-item-comments-router';
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
     wishlistItems: wishlistItemsRouter,
     s3: s3_Router,
     wishlistItemPhotos: wishlistItemPhotosRouter,
+    wishlistItemComments: wishlistItemCommentsRouter,
 });
 
 // export type definition of API
