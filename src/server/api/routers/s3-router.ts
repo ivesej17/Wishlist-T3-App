@@ -16,9 +16,16 @@ s3.config.update({
     },
 });
 
+const bucketUrl = env.S3_BUCKET_URL || '';
+
 // Create router with procedure definitions.
 export const s3_Router = createTRPCRouter({
     getUploadURL: publicProcedure.mutation(async () => {
+        type AmazonUploadDetails = {
+            key: string;
+            url: string;
+        };
+
         const key = randomBytes(16).toString('hex') + '.png';
 
         const requestParams: unknown = {
@@ -28,6 +35,38 @@ export const s3_Router = createTRPCRouter({
             ContentType: 'image/png',
         };
 
-        return await s3.getSignedUrlPromise('putObject', requestParams);
+        const amazonUploadDetails: AmazonUploadDetails = {
+            key: key,
+            url: await s3.getSignedUrlPromise('putObject', requestParams),
+        };
+
+        return amazonUploadDetails;
+    }),
+
+    getImagesForWishlistItem: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+        const photoRecords = await ctx.prisma.wishlistItemPhoto.findMany({
+            where: { wishlistItemID: input },
+        });
+
+        if (photoRecords.length === 0) return [];
+
+        const imageKeys = photoRecords.map((photoRecord) => photoRecord.imageKey);
+
+        const images: Blob[] = [];
+
+        for (const imageKey of imageKeys) {
+            const url = `${bucketUrl}/${imageKey}`;
+
+            const image = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    contentType: 'image/png',
+                },
+            }).then((response) => response.blob());
+
+            images.push(image);
+        }
+
+        return images;
     }),
 });

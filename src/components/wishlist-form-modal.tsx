@@ -1,11 +1,11 @@
 import CurrencyInput from 'react-currency-input-field';
-import { Prisma, WishlistItem } from '@prisma/client';
+import { Prisma, WishlistItem, WishlistItemPhoto } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { fileListToBlobArray } from '../utils/convert-filelist';
 import { api } from '../utils/api';
 import { getCurrentDateISO } from '../utils/time-utils';
-import { WishlistItemDTO } from '../utils/types/prisma-create-types';
+import SuccessToast from './success-toast';
 
 type FormValues = {
     title: string;
@@ -14,18 +14,35 @@ type FormValues = {
     notes: string;
 };
 
-const getPrismaDecimal = (price: string) => new Prisma.Decimal(parseFloat(price.substring(1)));
-
-const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistItem | undefined; onClose: () => void }> = (props) => {
+// prettier-ignore
+const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistItem | undefined; images: Blob[] | undefined; onClose: () => void }> = (props) => {
     if (!props.isVisible) return null;
 
     const [infoTabSelected, setInfoTabSelected] = useState(true);
+    const [images, setImages] = useState<Blob[] | undefined>(props.images);
+    const [showUploadSuccess, setShowUploadSuccess] = useState(false);
+    const [showUploadError, setShowUploadError] = useState(false);
 
-    const [files, setFile] = useState<Blob[] | null>(null);
+    const showErrorToast = () => {
+        setShowUploadError(true);
+
+        setTimeout(() => {
+            setShowUploadError(false);
+        }, 3000);
+    };
+
+    const showSuccessToast = () => {
+        setShowUploadSuccess(true);
+
+        setTimeout(() => {
+            setShowUploadSuccess(false);
+        }, 3000);
+    };
+
 
     const updateWishlistItem = api.wishlistItems.update.useMutation();
-
-    const gets3Link = api.s3.getUploadURL.useMutation();
+    const storeImageKey = api.wishlistItemPhotos.create.useMutation();
+    const gets3UploadCredentials = api.s3.getUploadURL.useMutation();
 
     const { register, handleSubmit } = useForm<FormValues>({
         defaultValues: props.wishlistItem ? { ...props.wishlistItem } : { title: '', price: '', productLink: '', notes: '' },
@@ -44,19 +61,40 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
             wishlistID: 1,
         };
 
-        updateWishlistItem.mutate(wishlistItem);
+        const createdWishlistItem = await updateWishlistItem.mutateAsync(wishlistItem);
 
-        // if (image && url.data) {
-        //     fetch(url.data, {
-        //         method: 'PUT',
-        //         headers: {
-        //             'Content-Type': 'image/png',
-        //         },
-        //         body: image,
-        //     })
-        //         .then((res) => console.log(res))
-        //         .catch((err) => console.log(err));
-        // }
+        if (!images) {
+            showSuccessToast();
+            props.onClose();
+            return;
+        }
+
+        const imageKeys: string[] = [];
+
+        for (const file of images) {
+            const credentials = await gets3UploadCredentials.mutateAsync();
+
+            imageKeys.push(credentials.key);
+
+            await fetch(credentials.url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'image/png',
+                },
+                body: file,
+            });
+        }
+
+        for (const key of imageKeys) {
+            const wishlistItemPhoto: Omit<WishlistItemPhoto, 'id'> = {
+                imageKey: key,
+                wishlistItemID: createdWishlistItem.id,
+            };
+
+            await storeImageKey.mutateAsync(wishlistItemPhoto);
+        }
+
+        showSuccessToast();
     };
 
     return (
@@ -97,9 +135,9 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
 
                         <div className={infoTabSelected ? 'hidden' : 'flex w-full flex-col items-center justify-center'}>
                             <div className="flex flex-row gap-2 overflow-x-auto overflow-y-hidden">
-                                {files &&
-                                    files.length > 0 &&
-                                    files.map((f) => {
+                                {images &&
+                                    images.length > 0 &&
+                                    images.map((f) => {
                                         return <img src={URL.createObjectURL(f)} className="h-72 w-full rounded-lg" />;
                                     })}
                             </div>
@@ -110,7 +148,7 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
                                         <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
                                     </svg>
                                     <span className="mt-2 text-base leading-normal">Select Images</span>
-                                    <input type="file" className="hidden" multiple={true} onChange={(e) => setFile(fileListToBlobArray(e.target.files))} />
+                                    <input type="file" className="hidden" multiple={true} onChange={(e) => setImages(fileListToBlobArray(e.target.files))} />
                                 </label>
                             </div>
                         </div>
@@ -127,6 +165,10 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
                         )}
                     </form>
                 </div>
+            </div>
+
+            <div className="absolute w-full bottom-0 left-44 mb-5 m-auto">
+                <SuccessToast message='Wishlist item added successfully!' isVisible={showUploadSuccess} />
             </div>
         </div>
     );

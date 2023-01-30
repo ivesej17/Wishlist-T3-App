@@ -19,7 +19,10 @@ const WishlistSelect: NextPage = () => {
                         wishlists.data.map((w) => {
                             return (
                                 <Link
-                                    href={'/wishlist'}
+                                    href={{
+                                        pathname: '/wishlist',
+                                        query: { wishlistID: w.id },
+                                    }}
                                     key={w.id}
                                     className="glass-button relative h-full w-1/3 cursor-pointer rounded-3xl p-5 no-underline shadow-md transition duration-200 hover:bg-purple-500"
                                 >

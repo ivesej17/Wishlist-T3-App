@@ -47,15 +47,19 @@ hr.solid {
 }
 
 .tab-focused {
-    @apply flex w-24 cursor-pointer justify-center rounded-t-xl bg-white ring-gray-900/5 select-none;
+    @apply flex w-24 cursor-pointer select-none justify-center rounded-t-xl bg-white ring-gray-900/5;
 }
 
 .tab-unfocused {
-    @apply flex w-24 cursor-pointer justify-center rounded-t-xl bg-pink-300 ring-gray-900/5 select-none;
+    @apply flex w-24 cursor-pointer select-none justify-center rounded-t-xl bg-pink-300 ring-gray-900/5;
 }
 
 .height-28-rem {
     height: 28rem;
+}
+
+.card {
+    @apply rounded-b-lg rounded-tr-lg bg-white p-6 shadow-xl ring-1 ring-gray-900/5 md:w-96 xs:w-80;
 }
 
 /* Chrome, Safari, Edge, Opera */

@@ -25,13 +25,15 @@ export const wishlistItemsRouter = createTRPCRouter({
 
     update: publicProcedure.input(WishlistItemSchema).mutation(async ({ ctx, input }) => {
         if (!input.id) {
-            await ctx.prisma.wishlistItem.create({ data: input });
-            return;
+            const newWishlistItem = await ctx.prisma.wishlistItem.create({ data: input });
+            return newWishlistItem;
         }
 
-        await ctx.prisma.wishlistItem.update({
+        const updatedItem = await ctx.prisma.wishlistItem.update({
             data: input,
             where: { id: input.id },
         });
+
+        return updatedItem;
     }),
 });

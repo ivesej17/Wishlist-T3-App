@@ -25,13 +25,13 @@ model WishlistItem {
     title        String   @db.VarChar(255)
     notes        String   @db.VarChar(1000)
     productLink  String   @db.VarChar(1000)
-    productPrice Float    @db.Double  
+    productPrice Float    @db.Double
     purchased    Boolean  @db.Bit(1)
     wishlistID   Int      @db.Int
 }
 
 // One-to-many relationship with WishlistItems.
-model Image {
+model WishlistItemPhoto {
     id             Int    @id @default(autoincrement())
     wishlistItemID Int    @db.Int
     imageKey       String @db.VarChar(255)
