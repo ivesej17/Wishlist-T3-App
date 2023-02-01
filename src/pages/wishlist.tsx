@@ -12,7 +12,15 @@ const WishList: NextPage = () => {
 
     const wishlistID = 1;
 
-    const { data, error, isLoading } = api.wishlistItems.getAll.useQuery(wishlistID);
+    const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+
+    const { data, error, isLoading } = api.wishlistItems.getAll.useQuery(wishlistID, {
+        onSuccess: (data) => {
+            setWishlistItems(data);
+        },
+    });
+
+    const removeWishlistItem = (wishlistItemID: number) => setWishlistItems(wishlistItems.filter((wishlistItem) => wishlistItem.id !== wishlistItemID));
 
     const [formModalIsVisible, setFormModalIsVisible] = useState(false);
 
@@ -21,38 +29,28 @@ const WishList: NextPage = () => {
     if (error) return <div>Error: {error.message}</div>;
 
     return (
-        <>
-            <main className="align-center min-w-screen flex min-h-screen justify-center overflow-auto">
-                {data.length === 0 && (
-                    <div className="flex h-screen w-full flex-col items-center justify-center gap-10 overflow-hidden">
-                        <h1>This wishlist is empty!</h1>
+        <main className="align-center min-w-screen flex min-h-screen justify-center overflow-auto">
+            {data.length === 0 && (
+                <div className="flex h-screen w-full flex-col items-center justify-center gap-10 overflow-hidden">
+                    <h1>This wishlist is empty!</h1>
 
-                        <GlassButton buttonText={'Create New Entry'} onClickFunction={() => setFormModalIsVisible(true)}></GlassButton>
-                    </div>
-                )}
+                    <GlassButton buttonText={'Create New Entry'} onClickFunction={() => setFormModalIsVisible(true)}></GlassButton>
+                </div>
+            )}
 
-                {data.length > 0 && (
-                    <div className="mx-5 grid w-[98%] items-center justify-center justify-items-center gap-5 md:my-5 md:grid-cols-2 lg:my-10 lg:mx-16 xl:grid-cols-3 xs:my-5 xs:grid-cols-1">
-                        {Array.from(Array(6).keys()).map((i) => (
-                            <div key={i}>
-                                <WishlistItemCard wishlistItem={data[0]!} key={data[0]!.id} />
-                            </div>
-                        ))}
-                    </div>
-                )}
+            {data.length > 0 && (
+                <div className="mx-5 grid w-[98%] items-center justify-center justify-items-center gap-5 md:my-5 md:grid-cols-2 lg:my-10 lg:mx-16 xl:grid-cols-3 xs:my-5 xs:grid-cols-1">
+                    {Array.from(Array(6).keys()).map((i) => (
+                        <div key={i}>
+                            <WishlistItemCard wishlistItem={data[0]!} removeWishlistItem={() => removeWishlistItem} key={data[0]!.id} />
+                        </div>
+                    ))}
+                </div>
+            )}
 
-                <WishlistFormModal isVisible={formModalIsVisible} wishlistItem={undefined} closeModal={() => setFormModalIsVisible(false)} images={undefined} />
-            </main>
-        </>
+            <WishlistFormModal isVisible={formModalIsVisible} wishlistItem={undefined} closeModal={() => setFormModalIsVisible(false)} images={undefined} />
+        </main>
     );
 };
 
 export default WishList;
-
-{
-    /* {data.map((wishlistItem) => (
-                            <div className="h-full w-full" onClick={() => openWishlistItemDetails(wishlistItem)}>
-                                <WishlistItemCard wishlistItem={wishlistItem} key={wishlistItem.id} />
-                            </div>
-                        ))} */
-}

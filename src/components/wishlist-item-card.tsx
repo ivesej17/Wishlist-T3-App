@@ -13,12 +13,14 @@ const openInNewTab = (url: string) => {
     if (newWindow) newWindow.opener = null;
 };
 
-const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
+const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistItem: () => void }> = (props) => {
     const [imageURLs, setImageURLs] = useState<string[]>([]);
 
     const [detailsModalVisible, setDetailsModalVisible] = useState(false);
 
     const [editModalIsVisible, setEditModalIsVisible] = useState(false);
+
+    const deleteWishlistItem = api.wishlistItems.delete.useMutation();
 
     const { isLoading } = api.wishlistItemPhotos.getImageKeysByWishlistItemID.useQuery(props.wishlistItem.id, {
         onSuccess: async (imageKeys) => {
@@ -26,6 +28,11 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
             setImageURLs(images.map((i) => window.URL.createObjectURL(i)));
         },
     });
+
+    const onDeleteClick = async () => {
+        await deleteWishlistItem.mutateAsync(props.wishlistItem.id);
+        props.removeWishlistItem();
+    };
 
     return (
         <div className="bg-[rgba(255, 255, 255)] rounded-2xl shadow-lg">
@@ -67,7 +74,7 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
                                 </div>
                             </button>
 
-                            <button className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-red-100">
+                            <button className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-red-100" onClick={() => onDeleteClick()}>
                                 <div className="flex flex-row gap-2">
                                     <FontAwesomeIcon icon={faTrash} style={{ fontSize: 25, color: 'red' }} />
                                     <p className="font-semibold text-red-600">Delete</p>

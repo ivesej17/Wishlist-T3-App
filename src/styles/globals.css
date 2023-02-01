@@ -2,12 +2,15 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
 h1,
 h2,
 h3,
 h4,
 h5,
 p {
+    font-family: 'Montserrat', sans-serif;
     color: white;
 }
 
@@ -45,19 +48,15 @@ hr.solid {
 }
 
 .secondary-button {
-    @apply cursor-pointer rounded border-solid border-pink-300 bg-white py-2 px-4 font-bold text-pink-300 hover:text-pink-400;
+    @apply cursor-pointer rounded border-2 border-solid border-pink-300 bg-none py-2 px-4 font-bold text-pink-300 hover:text-pink-400;
 }
 
 .tab-focused {
-    @apply flex w-24 cursor-pointer select-none justify-center rounded-t-xl bg-white ring-gray-900/5;
+    @apply flex w-24 cursor-pointer select-none justify-center rounded-t-xl bg-white p-3 ring-gray-900/5;
 }
 
 .tab-unfocused {
-    @apply flex w-24 cursor-pointer select-none justify-center rounded-t-xl bg-pink-300 ring-gray-900/5;
-}
-
-.height-28-rem {
-    height: 28rem;
+    @apply flex w-24 cursor-pointer select-none justify-center rounded-t-xl bg-pink-300 p-3 ring-gray-900/5 transition duration-200 ease-in-out hover:bg-pink-400;
 }
 
 .card {

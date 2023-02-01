@@ -6,6 +6,8 @@ import '../styles/globals.css';
 
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
+import 'react-toastify/dist/ReactToastify.css';
+
 import { config } from '@fortawesome/fontawesome-svg-core';
 
 // Tell Font Awesome to skip adding the CSS automatically

@@ -41,23 +41,14 @@ const WishlistItemDetailsModal: React.FC<{ isVisible: boolean; wishlistItem: Wis
 
                                 <p className="text-slate-500">${props.wishlistItem.productPrice}</p>
 
-                                <div className="mt-4 flex w-full flex-row gap-3 overflow-x-auto overflow-y-hidden">
+                                <div className="mt-4 grid grid-cols-2 justify-items-center gap-5">
                                     {props.imageURLs.map((url) => {
-                                        return (
-                                            <div className="flex flex-row items-center justify-center gap-3" key={url}>
-                                                <img className="h-64 w-64 rounded-lg object-cover" src={url}></img>
-                                                <img className="h-64 w-64 rounded-lg object-cover" src={url}></img>
-                                                <img className="h-64 w-64 rounded-lg object-cover" src={url}></img>
-                                                <img className="h-64 w-64 rounded-lg object-cover" src={url}></img>
-                                                <img className="h-64 w-64 rounded-lg object-cover" src={url}></img>
-                                                <img className="h-64 w-64 rounded-lg object-cover" src={url}></img>
-                                            </div>
-                                        );
+                                        return <img className="h-64 w-64 rounded-lg object-cover" src={url} key={url}></img>;
                                     })}
                                 </div>
 
                                 <div className="mt-4 rounded-lg border border-slate-100 bg-slate-50 p-5">
-                                    <p className="font-medium text-slate-900">Notes</p>
+                                    <p className="font-semibold text-slate-900">Notes</p>
                                     <hr className="mt-1 mb-3 w-12 border-slate-900"></hr>
                                     <p className="font-thin text-slate-900">{props.wishlistItem.notes}</p>
                                 </div>

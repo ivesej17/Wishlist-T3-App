@@ -21,15 +21,6 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
     const [infoTabSelected, setInfoTabSelected] = useState(true);
     const [images, setImages] = useState<Blob[] | undefined>(props.images);
     const [showUploadSuccess, setShowUploadSuccess] = useState(false);
-    const [showUploadError, setShowUploadError] = useState(false);
-
-    const showErrorToast = () => {
-        setShowUploadError(true);
-
-        setTimeout(() => {
-            setShowUploadError(false);
-        }, 3000);
-    };
 
     const showSuccessToast = () => {
         setShowUploadSuccess(true);
@@ -45,7 +36,10 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
     const updateWishlist = api.wishlists.updateTimeLastChanged.useMutation();
 
     const { register, handleSubmit } = useForm<FormValues>({
-        defaultValues: props.wishlistItem ? { ...props.wishlistItem } : { title: '', price: '', productLink: '', notes: '' },
+        defaultValues: 
+        props.wishlistItem 
+        ? { title: props.wishlistItem.title, price: '$' + props.wishlistItem.productPrice.toString(), productLink: props.wishlistItem.productLink, notes: props.wishlistItem.notes } 
+        : { title: '', price: '', productLink: '', notes: '' },
     });
 
     const onSubmit = async (data: FormValues) => {
@@ -100,19 +94,19 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-sm">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-md">
             <div>
                 <div className="flex flex-row gap-0">
                     <div className={infoTabSelected ? 'tab-focused' : 'tab-unfocused'} onClick={() => setInfoTabSelected(true)}>
-                        <p className={infoTabSelected ? 'font-medium text-slate-800' : 'text-white'}>Info</p>
+                        <p className={infoTabSelected ? 'font-medium text-slate-800 text-lg' : 'text-white text-lg'}>Info</p>
                     </div>
                     <div className={infoTabSelected ? 'tab-unfocused' : 'tab-focused'} onClick={() => setInfoTabSelected(false)}>
-                        <p className={infoTabSelected ? 'text-white' : 'font-medium text-slate-800'}>Images</p>
+                        <p className={infoTabSelected ? 'text-white text-lg' : 'font-medium text-slate-800 text-lg'}>Images</p>
                     </div>
                 </div>
 
-                <div className="height-28-rem rounded-b-lg rounded-tr-lg bg-white p-6 shadow-xl ring-1 ring-gray-900/5 md:w-96 xs:w-80">
-                    <form className="relative flex w-full flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+                <div className="h-[30rem] rounded-b-lg rounded-tr-lg bg-white p-6 shadow-xl ring-1 ring-gray-900/5 md:w-96 xs:w-80">
+                    <form className="flex w-full flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
                         <div className={infoTabSelected ? 'flex flex-col gap-4' : 'hidden'}>
                             <div className="w-full">
                                 <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-700">Title</label>
@@ -145,11 +139,11 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
                             </div>
 
                             <div className="bg-grey-lighter flex w-full items-center justify-center">
-                                <label className="text-blue border-blue hover:bg-blue flex w-full cursor-pointer flex-col items-center rounded-lg border bg-white px-4 py-6 uppercase tracking-wide shadow-lg transition duration-200 hover:text-blue-600">
+                                <label className="text-blue border-blue hover:bg-blue flex w-full cursor-pointer flex-col items-center rounded-lg border bg-white px-4 py-6 uppercase tracking-wide shadow-lg transition duration-200 hover:text-pink-400">
                                     <svg className="h-8 w-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                         <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
                                     </svg>
-                                    <span className="mt-2 text-base leading-normal">Select Images</span>
+                                    <span className="mt-2 text-base leading-normal select-none">Select Images</span>
                                     <input type="file" className="hidden" multiple={true} onChange={(e) => setImages(fileListToBlobArray(e.target.files))} />
                                 </label>
                             </div>
@@ -157,10 +151,10 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
 
                         {infoTabSelected && (
                             <div className="flex w-full flex-row justify-end gap-3">
-                                <button className="secondary-button" type="button" onClick={() => props.closeModal()}>
+                                <button className="secondary-button transition duration-200 ease-in-out" type="button" onClick={() => props.closeModal()}>
                                     Cancel
                                 </button>
-                                <button className="primary-button" type="submit">
+                                <button className="primary-button transition duration-200 ease-in-out" type="submit">
                                     Save
                                 </button>
                             </div>

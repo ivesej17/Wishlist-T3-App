@@ -36,4 +36,20 @@ export const wishlistItemsRouter = createTRPCRouter({
 
         return updatedItem;
     }),
+
+    delete: publicProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
+        await Promise.all([
+            ctx.prisma.wishlistItem.delete({
+                where: { id: input },
+            }),
+
+            ctx.prisma.wishlistItemComment.deleteMany({
+                where: { wishlistItemID: input },
+            }),
+
+            ctx.prisma.wishlistItemPhoto.deleteMany({
+                where: { wishlistItemID: input },
+            }),
+        ]);
+    }),
 });
