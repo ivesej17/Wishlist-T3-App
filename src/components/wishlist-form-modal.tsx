@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { fileListToBlobArray } from '../utils/convert-filelist';
 import { api } from '../utils/api';
 import { getCurrentDateISO } from '../utils/time-utils';
-import SuccessToast from './success-toast';
 
 type FormValues = {
     title: string;
@@ -20,15 +19,6 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
 
     const [infoTabSelected, setInfoTabSelected] = useState(true);
     const [images, setImages] = useState<Blob[] | undefined>(props.images);
-    const [showUploadSuccess, setShowUploadSuccess] = useState(false);
-
-    const showSuccessToast = () => {
-        setShowUploadSuccess(true);
-
-        setTimeout(() => {
-            setShowUploadSuccess(false);
-        }, 3000);
-    };
 
     const updateWishlistItem = api.wishlistItems.update.useMutation();
     const storeImageKey = api.wishlistItemPhotos.create.useMutation();
@@ -60,7 +50,6 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
         await updateWishlist.mutateAsync({id: 1, updatedAt: getCurrentDateISO()});
 
         if (!images) {
-            showSuccessToast();
             props.closeModal();
             return;
         }
@@ -89,8 +78,6 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
 
             await storeImageKey.mutateAsync(wishlistItemPhoto);
         }
-
-        showSuccessToast();
     };
 
     return (
@@ -161,10 +148,6 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
                         )}
                     </form>
                 </div>
-            </div>
-
-            <div className="absolute w-full bottom-0 left-44 mb-5 m-auto">
-                <SuccessToast message='Wishlist item added successfully!' isVisible={showUploadSuccess} />
             </div>
         </div>
     );
