@@ -63,6 +63,11 @@ hr.solid {
     @apply rounded-b-lg rounded-tr-lg bg-white p-6 shadow-xl ring-1 ring-gray-900/5 md:w-96 xs:w-80;
 }
 
+.toast-container {
+    position: fixed;
+    bottom: 0;
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

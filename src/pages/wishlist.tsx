@@ -7,10 +7,18 @@ import WishlistItemCard from '../components/wishlist-item-card';
 import { useRouter } from 'next/router';
 import { WishlistItem } from '@prisma/client';
 
+// export const getServerSideProps = async () => {
+//     return {
+//         props: {
+//             wishlistID:
+//         },
+//     };
+// }
+
 const WishList: NextPage = () => {
     const router = useRouter();
 
-    const wishlistID = 1;
+    const wishlistID = parseInt(router.query.wishlistID as string);
 
     const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
 
@@ -32,17 +40,17 @@ const WishList: NextPage = () => {
         <main className="align-center min-w-screen flex min-h-screen justify-center overflow-auto">
             {data.length === 0 && (
                 <div className="flex h-screen w-full flex-col items-center justify-center gap-10 overflow-hidden">
-                    <h1>This wishlist is empty!</h1>
+                    <h1 className="text-5xl font-bold">This wishlist is empty!</h1>
 
                     <GlassButton buttonText={'Create New Entry'} onClickFunction={() => setFormModalIsVisible(true)}></GlassButton>
                 </div>
             )}
 
             {data.length > 0 && (
-                <div className="mx-5 grid w-[98%] items-center justify-center justify-items-center gap-5 md:my-5 md:grid-cols-2 lg:my-10 lg:mx-16 xl:grid-cols-3 xs:my-5 xs:grid-cols-1">
-                    {Array.from(Array(6).keys()).map((i) => (
-                        <div key={i}>
-                            <WishlistItemCard wishlistItem={data[0]!} removeWishlistItem={() => removeWishlistItem} key={data[0]!.id} />
+                <div className="mx-5 grid w-[98%] justify-center justify-items-center gap-5 md:my-5 md:grid-cols-2 lg:my-10 lg:mx-16 xl:grid-cols-3 xs:my-5 xs:grid-cols-1">
+                    {wishlistItems.map((wishlistItem) => (
+                        <div key={wishlistItem.id}>
+                            <WishlistItemCard wishlistItem={wishlistItem} removeWishlistItem={() => removeWishlistItem} key={wishlistItem.id} />
                         </div>
                     ))}
                 </div>

@@ -4,7 +4,7 @@ import { api } from '../utils/api';
 import fetchImages from '../utils/fetch-images';
 import { faEllipsisH, faPencil, faRectangleList, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Popover, Transition } from '@headlessui/react';
+import { Menu, Transition } from '@headlessui/react';
 import WishlistItemDetailsModal from './wishlist-item-details-modal';
 import WishlistFormModal from './wishlist-form-modal';
 
@@ -38,10 +38,10 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
         <div className="bg-[rgba(255, 255, 255)] rounded-2xl shadow-lg">
             {imageURLs.length > 0 && <img className="h-[20rem] w-full rounded-t-lg object-cover" src={imageURLs[0]} />}
 
-            <Popover className="relative mt-2 mr-3 p-0">
-                <Popover.Button>
+            <Menu as="div" className="relative mt-2 mr-3 p-0">
+                <Menu.Button>
                     <FontAwesomeIcon icon={faEllipsisH} style={{ fontSize: 25, color: 'white' }} className="absolute top-0 right-0 cursor-pointer" />
-                </Popover.Button>
+                </Menu.Button>
 
                 <Transition
                     as={Fragment}
@@ -52,38 +52,44 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
                     leaveFrom="opacity-100 translate-y-0"
                     leaveTo="opacity-0 translate-y-1"
                 >
-                    <Popover.Panel className="absolute right-0 z-10 rounded-2xl bg-white p-3">
+                    <Menu.Items className="absolute right-0 z-10 -translate-y-[calc(100%+25px)] rounded-2xl bg-white p-3">
                         <div className="flex flex-col items-start gap-1">
-                            <button
-                                className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
-                                onClick={() => setDetailsModalVisible(true)}
-                            >
-                                <div className="flex flex-row gap-2">
-                                    <FontAwesomeIcon icon={faRectangleList} style={{ fontSize: 25, color: 'black' }} />
-                                    <p className="font-semibold text-slate-900">See Details</p>
-                                </div>
-                            </button>
+                            <Menu.Item>
+                                <button
+                                    className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
+                                    onClick={() => setDetailsModalVisible(true)}
+                                >
+                                    <div className="flex flex-row gap-2">
+                                        <FontAwesomeIcon icon={faRectangleList} style={{ fontSize: 25, color: 'black' }} />
+                                        <p className="font-semibold text-slate-900">See Details</p>
+                                    </div>
+                                </button>
+                            </Menu.Item>
 
-                            <button
-                                className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
-                                onClick={() => setEditModalIsVisible(true)}
-                            >
-                                <div className="flex flex-row gap-2">
-                                    <FontAwesomeIcon icon={faPencil} style={{ fontSize: 25, color: 'black' }} />
-                                    <p className="font-semibold text-slate-900">Edit</p>
-                                </div>
-                            </button>
+                            <Menu.Item>
+                                <button
+                                    className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
+                                    onClick={() => setEditModalIsVisible(true)}
+                                >
+                                    <div className="flex flex-row gap-2">
+                                        <FontAwesomeIcon icon={faPencil} style={{ fontSize: 25, color: 'black' }} />
+                                        <p className="font-semibold text-slate-900">Edit</p>
+                                    </div>
+                                </button>
+                            </Menu.Item>
 
-                            <button className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-red-100" onClick={() => onDeleteClick()}>
-                                <div className="flex flex-row gap-2">
-                                    <FontAwesomeIcon icon={faTrash} style={{ fontSize: 25, color: 'red' }} />
-                                    <p className="font-semibold text-red-600">Delete</p>
-                                </div>
-                            </button>
+                            <Menu.Item>
+                                <button className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-red-100" onClick={() => onDeleteClick()}>
+                                    <div className="flex flex-row gap-2">
+                                        <FontAwesomeIcon icon={faTrash} style={{ fontSize: 25, color: 'red' }} />
+                                        <p className="font-semibold text-red-600">Delete</p>
+                                    </div>
+                                </button>
+                            </Menu.Item>
                         </div>
-                    </Popover.Panel>
+                    </Menu.Items>
                 </Transition>
-            </Popover>
+            </Menu>
 
             <WishlistItemDetailsModal
                 isVisible={detailsModalVisible}

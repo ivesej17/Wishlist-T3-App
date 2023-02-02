@@ -95,7 +95,7 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
                                         })}
 
                                     <div className="mt-3 w-full">
-                                        <input type="text" className="form-input-alt" onChange={(event) => setComment(event.target.value)}></input>
+                                        <input type="text" className="form-input-alt" value={comment} onChange={(event) => setComment(event.target.value)}></input>
                                     </div>
 
                                     <button
@@ -110,6 +110,8 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
                     )}
                 </Disclosure>
             </div>
+
+            <ToastContainer />
         </>
     );
 };

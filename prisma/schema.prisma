@@ -17,7 +17,6 @@ model Wishlist {
     listOwner String   @db.VarChar(255)
 }
 
-// One-to-many relationship with Wishlists.
 model WishlistItem {
     id           Int      @id @default(autoincrement())
     createdAt    DateTime @db.DateTime()
@@ -30,7 +29,6 @@ model WishlistItem {
     wishlistID   Int      @db.Int
 }
 
-// One-to-many relationship with WishlistItems.
 model WishlistItemPhoto {
     id             Int    @id @default(autoincrement())
     wishlistItemID Int    @db.Int
@@ -44,4 +42,13 @@ model WishlistItemComment {
     comment        String   @db.VarChar(1000)
     wishlistItemID Int      @db.Int
     byUser         String   @db.VarChar(255)
+}
+
+model WishlistSubscription {
+    id                   Int     @id @default(autoincrement())
+    email                String  @db.VarChar(255)
+    wishlistID           Int     @db.Int
+    subscribed           Boolean @db.Bit(1)
+    subscribeToCreations Boolean @db.Bit(1)
+    subscribeToUpdates   Boolean @db.Bit(1)
 }
