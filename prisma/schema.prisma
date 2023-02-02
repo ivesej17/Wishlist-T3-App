@@ -51,4 +51,5 @@ model WishlistSubscription {
     subscribed           Boolean @db.Bit(1)
     subscribeToCreations Boolean @db.Bit(1)
     subscribeToUpdates   Boolean @db.Bit(1)
+    subscriveToComments  Boolean @db.Bit(1)
 }
