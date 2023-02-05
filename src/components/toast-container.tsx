@@ -2,30 +2,20 @@ import { toast, ToastContainer } from 'react-toastify';
 
 export const Toast = () => {
     return (
-        <ToastContainer
-            position="bottom-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-        />
+        <div className="absolute top-0 left-0 right-0 bottom-0 h-screen w-screen">
+            <ToastContainer
+                position="bottom-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                limit={1}
+            />
+        </div>
     );
-};
-
-export const displayToast = (message: string) => {
-    toast(message, {
-        position: 'bottom-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-    });
 };

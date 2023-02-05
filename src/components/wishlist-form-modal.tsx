@@ -1,10 +1,12 @@
 import CurrencyInput from 'react-currency-input-field';
 import { WishlistItem, WishlistItemPhoto } from '@prisma/client';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fileListToBlobArray } from '../utils/convert-filelist';
 import { api } from '../utils/api';
 import { getCurrentDateISO } from '../utils/time-utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 
 type FormValues = {
     title: string;
@@ -13,17 +15,54 @@ type FormValues = {
     notes: string;
 };
 
+const getArrayOfMapKeys = (map: Map<string, File>) => {
+    const keys: string[] = [];
+    map.forEach((value, key) => keys.push(key));
+    return keys;
+};
+
 // prettier-ignore
-const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistItem | undefined; images: Blob[] | undefined; closeModal: () => void }> = (props) => {
+const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistItem | undefined; images: File[]; closeModal: () => void }> = (props) => {
     if (!props.isVisible) return null;
 
     const [infoTabSelected, setInfoTabSelected] = useState(true);
-    const [images, setImages] = useState<Blob[] | undefined>(props.images);
+    const [imageURLsToFiles, setImageURLsToFiles] = useState(new Map<string, File>());
 
     const updateWishlistItem = api.wishlistItems.update.useMutation();
     const storeImageKey = api.wishlistItemPhotos.create.useMutation();
     const gets3UploadCredentials = api.s3.getUploadURL.useMutation();
     const updateWishlist = api.wishlists.updateTimeLastChanged.useMutation();
+
+    useEffect(() => {
+        setNewImages(props.images);
+    }, []);
+
+    const setNewImages = (files: File[]) => {
+        imageURLsToFiles.forEach((value, key) => URL.revokeObjectURL(key));
+        setImageURLsToFiles(new Map<string, File>());
+
+        files.forEach((file) => {
+            const url = URL.createObjectURL(file);
+
+            setImageURLsToFiles(prevMap => {
+                const newMap = new Map(prevMap);
+                newMap.set(url, file);
+                return newMap;
+            });
+
+            imageURLsToFiles.set(url, file);
+        });
+    }
+
+    const removeImage = (imageUrl: string) => {
+        URL.revokeObjectURL(imageUrl);
+
+        setImageURLsToFiles(prevMap => {
+            const newMap = new Map(prevMap);
+            newMap.delete(imageUrl);
+            return newMap;
+        });
+    }
 
     const { register, handleSubmit } = useForm<FormValues>({
         defaultValues: 
@@ -49,14 +88,14 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
 
         await updateWishlist.mutateAsync({id: 1, updatedAt: getCurrentDateISO()});
 
-        if (!images) {
+        if (imageURLsToFiles.size === 0) {
             props.closeModal();
             return;
         }
 
         const imageKeys: string[] = [];
 
-        for (const file of images) {
+        for (const file of imageURLsToFiles.values()) {
             const credentials = await gets3UploadCredentials.mutateAsync();
 
             imageKeys.push(credentials.key);
@@ -93,6 +132,8 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
                 </div>
 
                 <div className="h-[30rem] rounded-b-lg rounded-tr-lg bg-white p-6 shadow-xl ring-1 ring-gray-900/5 md:w-96 xs:w-80">
+                    {/* {infoTabSelected && <p className='text-neutral-800 text-lg font-semibold mt-0 mb-4'>{props.wishlistItem ? 'Editing Existing Item' : 'Adding New Item'}</p>} */}
+                    
                     <form className="flex w-full flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
                         <div className={infoTabSelected ? 'flex flex-col gap-4' : 'hidden'}>
                             <div className="w-full">
@@ -118,10 +159,17 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
 
                         <div className={infoTabSelected ? 'hidden' : 'flex w-full flex-col items-center justify-center'}>
                             <div className="flex flex-row gap-2 overflow-x-auto overflow-y-hidden">
-                                {images &&
-                                    images.length > 0 &&
-                                    images.map((f) => {
-                                        return <img src={URL.createObjectURL(f)} className="h-72 w-full rounded-lg" />;
+                                {
+                                    imageURLsToFiles.keys.length > 0 &&
+                                    getArrayOfMapKeys(imageURLsToFiles).map(url => {
+                                        return(
+                                            <div className=" relative h-full w-full">
+                                                <button className="absolute top-0 right-0 bg-red-500 flex items-center justify-center" onClick={() => imageURLsToFiles.delete(url)}>
+                                                    <FontAwesomeIcon icon={faCircleXmark} style={{ fontSize: 25, color: 'white' }} />
+                                                </button>
+                                                <img src={url} className="h-72 w-full rounded-lg" />;
+                                            </div>
+                                        )
                                     })}
                             </div>
 
@@ -131,7 +179,7 @@ const WishlistFormModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistIt
                                         <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
                                     </svg>
                                     <span className="mt-2 text-base leading-normal select-none">Select Images</span>
-                                    <input type="file" className="hidden" multiple={true} onChange={(e) => setImages(fileListToBlobArray(e.target.files))} />
+                                    <input type="file" className="hidden" multiple={true} onChange={(e) => setNewImages(e.target.files ? [...e.target.files] : [])} />
                                 </label>
                             </div>
                         </div>

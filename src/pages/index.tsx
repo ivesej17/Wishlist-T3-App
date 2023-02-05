@@ -1,10 +1,8 @@
 import { motion } from 'framer-motion';
 import { type NextPage } from 'next';
 import Head from 'next/head';
-import Link from 'next/link';
 import GlassButton from '../components/glass-button';
-
-// bg-gradient-to-b from-[#ecb1c5] to-[#15162c]
+import { signIn, getSession, GetSessionParams } from 'next-auth/react';
 
 const Home: NextPage = () => {
     return (
@@ -22,9 +20,7 @@ const Home: NextPage = () => {
                         </h1>
                     </motion.div>
 
-                    <Link href={'/wishlist-select'} className="no-underline">
-                        <GlassButton buttonText={'Sign In'}></GlassButton>
-                    </Link>
+                    <GlassButton buttonText={'Sign In'} onClickFunction={() => signIn()}></GlassButton>
                 </div>
             </main>
         </>
@@ -32,3 +28,19 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getServerSideProps = async (context: GetSessionParams | undefined) => {
+    const session = await getSession(context);
+
+    if (session) {
+        return {
+            redirect: {
+                destination: '/wishlist-select',
+            },
+        };
+    }
+
+    return {
+        props: {},
+    };
+};

@@ -43,7 +43,13 @@ const WishlistItemDetailsModal: React.FC<{ isVisible: boolean; wishlistItem: Wis
 
                                 <div className="mt-4 grid grid-cols-2 justify-items-center gap-5">
                                     {props.imageURLs.map((url) => {
-                                        return <img className="h-64 w-64 rounded-lg object-cover" src={url} key={url}></img>;
+                                        return (
+                                            <img
+                                                className={`rounded-lg object-cover ${props.imageURLs.length > 1 ? 'h-64 w-64' : ''}`}
+                                                src={url}
+                                                key={url}
+                                            ></img>
+                                        );
                                     })}
                                 </div>
 
@@ -54,16 +60,6 @@ const WishlistItemDetailsModal: React.FC<{ isVisible: boolean; wishlistItem: Wis
                                 </div>
 
                                 <WishlsitItemComments wishlistItemID={props.wishlistItem.id} />
-
-                                {/* <div className="float-right mt-4">
-                                    <button
-                                        type="button"
-                                        className="inline-flex justify-center rounded-md border border-transparent bg-pink-300 px-4 py-2 text-sm font-medium text-white hover:bg-pink-400 focus:outline-none focus-visible:ring-2"
-                                        onClick={() => openInNewTab(props.wishlistItem.productLink)}
-                                    >
-                                        View Product
-                                    </button>
-                                </div> */}
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>

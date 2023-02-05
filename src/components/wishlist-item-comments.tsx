@@ -2,11 +2,12 @@ import { faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Disclosure } from '@headlessui/react';
 import { WishlistItemComment } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import { api } from '../utils/api';
 import { getCurrentDateISO } from '../utils/time-utils';
-import { displayToast, Toast } from './toast-container';
+import { displaySuccessToast } from '../utils/toast-functions';
 
 const getLocaleTimeString = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
@@ -17,11 +18,9 @@ const getLocaleTimeString = (date: Date) => {
 };
 
 const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
-    const { data, isLoading, error } = api.wishlistItemComments.get.useQuery(props.wishlistItemID, {
-        onSuccess: (data) => {
-            console.log('comments retrieved for id', props.wishlistItemID, ':', data);
-        },
-    });
+    const user = useSession().data?.user;
+
+    const { data, isLoading, error } = api.wishlistItemComments.get.useQuery(props.wishlistItemID);
 
     const submitComment = api.wishlistItemComments.create.useMutation();
 
@@ -35,7 +34,7 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
             createdAt: getCurrentDateISO(),
             updatedAt: getCurrentDateISO(),
             wishlistItemID: props.wishlistItemID,
-            byUser: 'Elliott',
+            byUser: user?.name || 'Anonymous',
         };
 
         const createdComment = await submitComment.mutateAsync(newComment);
@@ -53,7 +52,7 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
             1
         );
 
-        displayToast('Comment deleted!');
+        displaySuccessToast('Comment deleted!');
     };
 
     if (!data || isLoading) return <div>Loading...</div>;
@@ -95,7 +94,12 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
                                         })}
 
                                     <div className="mt-3 w-full">
-                                        <input type="text" className="form-input-alt" value={comment} onChange={(event) => setComment(event.target.value)}></input>
+                                        <input
+                                            type="text"
+                                            className="form-input-alt"
+                                            value={comment}
+                                            onChange={(event) => setComment(event.target.value)}
+                                        ></input>
                                     </div>
 
                                     <button
@@ -110,8 +114,6 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
                     )}
                 </Disclosure>
             </div>
-
-            <ToastContainer />
         </>
     );
 };

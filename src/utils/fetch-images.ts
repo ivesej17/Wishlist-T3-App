@@ -4,25 +4,30 @@ import { env } from 'process';
 
 const bucketUrl = 'https://wishlist-1dwx78.s3.us-west-2.amazonaws.com';
 
-const fetchImages = async (imageKeys: string[]) => {
-    const images: Blob[] = [];
+const fetchImages = async (downloadURLs: string[]) => {
+    const images: File[] = [];
 
-    for (const imageKey of imageKeys) {
-        const url = `${bucketUrl}/${imageKey}`;
+    let i = 0;
 
-        console.log(url);
-
+    for (const url of downloadURLs) {
         const image = await fetch(url, {
             method: 'GET',
             headers: {
                 contentType: 'image/png',
             },
-        }).then((response) => response.blob());
+        }).then(async (response) => blobToFile(await response.blob(), `image${i++}.png`));
 
         images.push(image);
     }
 
     return images;
+};
+
+const blobToFile = (blob: Blob, fileName: string): File => {
+    return new File([blob], fileName, {
+        type: blob.type,
+        lastModified: Date.now(),
+    });
 };
 
 export default fetchImages;
