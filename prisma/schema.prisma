@@ -2,54 +2,60 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Wishlist {
-    id        Int      @id @default(autoincrement())
-    updatedAt DateTime @updatedAt
-    name      String   @db.VarChar(255)
-    listOwner String   @db.VarChar(255)
+  id        Int      @id @default(autoincrement())
+  updatedAt DateTime @updatedAt
+  name      String   @db.VarChar(255)
+  listOwner String   @db.VarChar(255)
 }
 
 model WishlistItem {
-    id           Int      @id @default(autoincrement())
-    createdAt    DateTime @db.DateTime()
-    updatedAt    DateTime @db.DateTime()
-    title        String   @db.VarChar(255)
-    notes        String   @db.VarChar(1000)
-    productLink  String   @db.VarChar(1000)
-    productPrice Float    @db.Double
-    purchased    Boolean  @db.Bit(1)
-    wishlistID   Int      @db.Int
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @db.DateTime()
+  updatedAt    DateTime @db.DateTime()
+  title        String   @db.VarChar(255)
+  notes        String   @db.VarChar(1000)
+  productLink  String   @db.VarChar(1000)
+  productPrice Float    @db.Double
+  purchased    Boolean  @db.Bit(1)
+  wishlistID   Int      @db.Int
 }
 
 model WishlistItemPhoto {
-    id             Int    @id @default(autoincrement())
-    wishlistItemID Int    @db.Int
-    imageKey       String @db.VarChar(255)
+  id             Int    @id @default(autoincrement())
+  wishlistItemID Int    @db.Int
+  imageKey       String @db.VarChar(255)
 }
 
 model WishlistItemComment {
-    id             Int      @id @default(autoincrement())
-    createdAt      DateTime @db.DateTime()
-    updatedAt      DateTime @db.DateTime()
-    comment        String   @db.VarChar(1000)
-    wishlistItemID Int      @db.Int
-    byUser         String   @db.VarChar(255)
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @db.DateTime()
+  updatedAt      DateTime @db.DateTime()
+  comment        String   @db.VarChar(1000)
+  wishlistItemID Int      @db.Int
+  byUser         String   @db.VarChar(255)
 }
 
 model WishlistSubscription {
-    id                   Int     @id @default(autoincrement())
-    email                String  @db.VarChar(255)
-    wishlistID           Int     @db.Int
-    subscribed           Boolean @db.Bit(1)
-    subscribeToCreations Boolean @db.Bit(1)
-    subscribeToUpdates   Boolean @db.Bit(1)
-    subscribeToComments  Boolean @db.Bit(1)
+  id                   Int     @id @default(autoincrement())
+  email                String  @db.VarChar(255)
+  wishlistID           Int     @db.Int
+  subscribed           Boolean @db.Bit(1)
+  subscribeToCreations Boolean @db.Bit(1)
+  subscribeToUpdates   Boolean @db.Bit(1)
+  subscribeToComments  Boolean @db.Bit(1)
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @db.VarChar(255)
+  name      String   @db.VarChar(255)
 }

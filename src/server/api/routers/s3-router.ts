@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import * as AWS from 'aws-sdk';
 import { z } from 'zod';
 import { env } from 'process';
@@ -20,7 +20,7 @@ const bucketUrl = env.S3_BUCKET_URL || '';
 
 // Create router with procedure definitions.
 export const s3_Router = createTRPCRouter({
-    getUploadURL: publicProcedure.mutation(async () => {
+    getUploadURL: protectedProcedure.mutation(async () => {
         type AmazonUploadDetails = {
             key: string;
             url: string;
@@ -43,30 +43,26 @@ export const s3_Router = createTRPCRouter({
         return amazonUploadDetails;
     }),
 
-    getImagesForWishlistItem: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+    getDownloadURLs: protectedProcedure.input(z.number()).query(async ({ input, ctx }) => {
         const photoRecords = await ctx.prisma.wishlistItemPhoto.findMany({
             where: { wishlistItemID: input },
         });
 
         if (photoRecords.length === 0) return [];
 
-        const imageKeys = photoRecords.map((photoRecord) => photoRecord.imageKey);
+        const downloadURLs: string[] = [];
 
-        const images: Blob[] = [];
+        for(const record of photoRecords) {
+            const requestParams: unknown = {
+                Bucket: bucketName,
+                Key: record.imageKey,
+                Expires: 30,
+            };
 
-        for (const imageKey of imageKeys) {
-            const url = `${bucketUrl}/${imageKey}`;
-
-            const image = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    contentType: 'image/png',
-                },
-            }).then((response) => response.blob());
-
-            images.push(image);
+            const downloadURL = await s3.getSignedUrlPromise('getObject', requestParams);
+            downloadURLs.push(downloadURL);
         }
 
-        return images;
+        return downloadURLs;
     }),
 });

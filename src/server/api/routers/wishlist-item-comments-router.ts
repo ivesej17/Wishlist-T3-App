@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 // Define schemas for input validation.
 const WishlistItemCommentSchema = z.object({
@@ -14,18 +14,18 @@ const WishlistItemCommentSchema = z.object({
 
 // Create router with procedure definitions.
 export const wishlistItemCommentsRouter = createTRPCRouter({
-    get: publicProcedure.input(z.number()).query(async ({ ctx, input }) => {
+    get: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {
         return await ctx.prisma.wishlistItemComment.findMany({
             where: { wishlistItemID: input },
         });
     }),
 
-    create: publicProcedure.input(WishlistItemCommentSchema.omit({ id: true })).mutation(async ({ ctx, input }) => {
+    create: protectedProcedure.input(WishlistItemCommentSchema.omit({ id: true })).mutation(async ({ ctx, input }) => {
         const newComment = await ctx.prisma.wishlistItemComment.create({ data: input });
         return newComment;
     }),
 
-    delete: publicProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
+    delete: protectedProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
         await ctx.prisma.wishlistItemComment.delete({
             where: {
                 id: input,

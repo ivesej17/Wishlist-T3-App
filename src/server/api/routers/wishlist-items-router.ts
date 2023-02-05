@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 // Define schemas for input validation.
 const WishlistItemSchema = z.object({
@@ -17,13 +17,13 @@ const WishlistItemSchema = z.object({
 
 // Create router with procedure definitions.
 export const wishlistItemsRouter = createTRPCRouter({
-    getAll: publicProcedure.input(z.number()).query(({ ctx, input }) => {
+    getAll: protectedProcedure.input(z.number()).query(({ ctx, input }) => {
         return ctx.prisma.wishlistItem.findMany({
             where: { wishlistID: input },
         });
     }),
 
-    update: publicProcedure.input(WishlistItemSchema).mutation(async ({ ctx, input }) => {
+    update: protectedProcedure.input(WishlistItemSchema).mutation(async ({ ctx, input }) => {
         if (!input.id) {
             const newWishlistItem = await ctx.prisma.wishlistItem.create({ data: input });
             return newWishlistItem;
@@ -37,7 +37,7 @@ export const wishlistItemsRouter = createTRPCRouter({
         return updatedItem;
     }),
 
-    delete: publicProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
+    delete: protectedProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
         await Promise.all([
             ctx.prisma.wishlistItem.delete({
                 where: { id: input },
