@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import ButtonInnerLoader from './button-inner-spinner';
 import { displayDangerToast, displaySuccessToast } from '../utils/toast-functions';
+import { useMutation } from '@tanstack/react-query';
+import { UploadInput, uploadImageToS3 } from '../utils/upload-image';
 
 type FormValues = {
     title: string;
@@ -36,6 +38,7 @@ const WishlistFormModal: React.FC<{
     const storeImageKey = api.wishlistItemPhotos.create.useMutation();
     const gets3UploadCredentials = api.s3.getUploadURL.useMutation();
     const updateWishlist = api.wishlists.updateTimeLastChanged.useMutation();
+    const uploadImage = useMutation((uploadInput: UploadInput) => uploadImageToS3(uploadInput));
 
     const { register, handleSubmit, reset, setFocus } = useForm<FormValues>({
         defaultValues: { title: '', price: '', productLink: '', notes: '' },
@@ -77,16 +80,8 @@ const WishlistFormModal: React.FC<{
     };
 
     const onSubmit = async (data: FormValues) => {
-        console.log('imageURLsToFiles', imageURLsToFiles);
-        console.log('imageURLs', imageURLs);
-        return;
-
-        if (imageURLsToFiles.size === 0) {
+        if (imageURLsToFiles.size === 0 || imageURLs.length === 0) {
             displayDangerToast('Oh no buddy! You forgot to add an image!');
-            return;
-        } else {
-            console.log('MAP:', imageURLsToFiles);
-            console.log('ARRAY:', imageURLs);
             return;
         }
 
@@ -120,13 +115,7 @@ const WishlistFormModal: React.FC<{
 
             imageKeys.push(credentials.key);
 
-            await fetch(credentials.url, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'image/png',
-                },
-                body: file,
-            });
+            await uploadImage.mutateAsync({ url: credentials.url, file });
         }
 
         for (const key of imageKeys) {
