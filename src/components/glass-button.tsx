@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-const GlassButton: React.FC<{ buttonText: string, onClickFunction?: () => void}> = (props) => {
+const GlassButton: React.FC<{ buttonText: string; onClickFunction?: () => void }> = (props) => {
     return (
         <motion.button
             whileHover={{ scale: 1.05 }}

@@ -1,3 +1,5 @@
+import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog, Transition } from '@headlessui/react';
 import { WishlistItem } from '@prisma/client';
 import { Fragment, useState } from 'react';
@@ -35,17 +37,21 @@ const WishlistItemDetailsModal: React.FC<{ isVisible: boolean; wishlistItem: Wis
                             leaveTo="opacity-0 scale-95"
                         >
                             <Dialog.Panel className="max-w-7xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                                <button className="absolute top-0 right-0 m-3 flex items-center justify-center" onClick={() => props.closeModal()}>
+                                    <FontAwesomeIcon icon={faCircleXmark} style={{ fontSize: 18, color: 'rgb(244 114 182)' }} />
+                                </button>
+
+                                <Dialog.Title as="h3" className="mt-3 text-lg font-medium leading-6 text-gray-900">
                                     {props.wishlistItem.title}
                                 </Dialog.Title>
 
                                 <p className="text-slate-500">${props.wishlistItem.productPrice}</p>
 
-                                <div className="mt-4 grid grid-cols-2 justify-items-center gap-5">
+                                <div className={`mt-4 grid justify-items-center gap-5 ${props.imageURLs.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                                     {props.imageURLs.map((url) => {
                                         return (
                                             <img
-                                                className={`rounded-lg object-cover ${props.imageURLs.length > 1 ? 'h-64 w-64' : ''}`}
+                                                className={`h-64 rounded-lg object-cover ${props.imageURLs.length > 1 ? 'w-64' : 'w-full'}`}
                                                 src={url}
                                                 key={url}
                                             ></img>

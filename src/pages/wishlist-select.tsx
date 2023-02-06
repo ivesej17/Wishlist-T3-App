@@ -5,9 +5,9 @@ import { getSession, GetSessionParams, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState, useContext } from 'react';
 import { api } from '../utils/api';
-import { displayToast } from '../utils/toast-functions';
+import { displayDangerToast, displaySuccessToast, displayToast } from '../utils/toast-functions';
 
-const WishlistSelect: NextPage = () => {    
+const WishlistSelect: NextPage = () => {
     const user = useSession().data?.user;
 
     const wishlists = api.wishlists.getAll.useQuery(undefined, {
@@ -34,8 +34,8 @@ const WishlistSelect: NextPage = () => {
 
         bellIcon.set(wishlistID, newBellIcon);
 
-        if (isBellActive) displayToast('🔔 Notifications enabled!');
-        else displayToast('🔕 Notifications disabled!');
+        if (isBellActive) displaySuccessToast('🔔 Notifications enabled!');
+        else displayDangerToast('🔕 Notifications disabled!');
     };
 
     const getBellIcon = (wishlistID: number) => {

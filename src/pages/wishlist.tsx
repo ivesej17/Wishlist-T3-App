@@ -17,33 +17,31 @@ const WishList: NextPage = () => {
 
     const wishlistName = router.query.wishlistName as string;
 
-    const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+    const [wishlistItems, setWishlistItems] = useState<readonly WishlistItem[]>([]);
 
     const { data, error, isLoading } = api.wishlistItems.getAll.useQuery(wishlistID, {
         onSuccess: (data) => setWishlistItems(data),
     });
 
+    const addWishlistItem = (wishlistItem: WishlistItem) => setWishlistItems((prev) => [...prev, wishlistItem]);
+
+    const modifyWishlistItem = (wishlistItem: WishlistItem) => setWishlistItems((prev) => prev.map((w) => (w.id === wishlistItem.id ? wishlistItem : w)));
+
     const removeWishlistItem = (wishlistItemID: number) => setWishlistItems(wishlistItems.filter((wishlistItem) => wishlistItem.id !== wishlistItemID));
 
     const [formModalIsVisible, setFormModalIsVisible] = useState(false);
 
-    // const confirmCreationOrUpdate = (message: string) => displaySuccessToast('Wishlist item created successfully!');
-
-    // const confirmDeletion = () => displayDangerToast('Wishlist item deleted successfully!');
-
     if (!data || isLoading) return <div>Loading...</div>;
-
-    if (error) return <div>Error: {error.message}</div>;
 
     return (
         <main className="flex h-screen w-screen flex-col items-center overflow-y-auto overflow-x-hidden">
-            <div className="absolute top-0 m-3 flex items-center justify-between rounded-3xl bg-white p-3 shadow-md md:w-10/12 xl:w-1/2 xs:w-[95%]">
-                <button className='hover:bg-pink-100 transition ease-in-out duration-150 rounded-full'>
-                    <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'rgb(244 114 182)' }} className="text-pink-400" />
+            <div className="bg-[rgba(255, 255, 255, 0.18)] absolute top-0 m-3 flex items-center justify-between rounded-3xl shadow-2xl md:w-10/12 xl:w-1/2 xs:w-[95%]">
+                <button className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-300" onClick={() => router.back()}>
+                    <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'white' }} className="text-pink-400" />
                 </button>
-                <h1 className="text-center text-2xl font-semibold text-slate-700">{wishlistName}</h1>
-                <button className="flex gap-3" onClick={() => setFormModalIsVisible(true)}>
-                    <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: 25, color: 'rgb(244 114 182)' }} />
+                <h1 className="text-center text-2xl font-semibold text-slate-50">{wishlistName}</h1>
+                <button className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-300" onClick={() => setFormModalIsVisible(true)}>
+                    <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: 25, color: 'white' }} />
                 </button>
             </div>
 
@@ -56,7 +54,7 @@ const WishList: NextPage = () => {
             )}
 
             {data.length > 0 && (
-                <div className="mx-5 grid w-[98%] justify-center justify-items-center gap-5 md:my-5 md:grid-cols-2 lg:my-10 lg:mx-16 xl:grid-cols-3 xs:my-5 xs:grid-cols-1">
+                <div className="mt-20 grid w-[98%] justify-center justify-items-center gap-5 md:grid-cols-2 xl:grid-cols-3 xs:grid-cols-1">
                     {wishlistItems.map((wishlistItem) => (
                         <div key={wishlistItem.id}>
                             <WishlistItemCard wishlistItem={wishlistItem} removeWishlistItem={() => removeWishlistItem} key={wishlistItem.id} />
@@ -65,7 +63,7 @@ const WishList: NextPage = () => {
                 </div>
             )}
 
-            <WishlistFormModal isVisible={formModalIsVisible} wishlistItem={undefined} closeModal={() => setFormModalIsVisible(false)} images={[]} />
+            <WishlistFormModal isVisible={formModalIsVisible} wishlistItem={undefined} closeModal={() => setFormModalIsVisible(false)} images={[]} addWishlistItem={() => addWishlistItem} />
         </main>
     );
 };

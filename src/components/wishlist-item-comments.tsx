@@ -8,6 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import { api } from '../utils/api';
 import { getCurrentDateISO } from '../utils/time-utils';
 import { displaySuccessToast } from '../utils/toast-functions';
+import LoadingSpinner from './loading-spinner';
 
 const getLocaleTimeString = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
@@ -55,7 +56,13 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
         displaySuccessToast('Comment deleted!');
     };
 
-    if (!data || isLoading) return <div>Loading...</div>;
+    if (!data || isLoading) {
+        return (
+            <div className="flex items-center justify-center">
+                <LoadingSpinner />
+            </div>
+        );
+    }
 
     return (
         <>
@@ -63,7 +70,7 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
                 <Disclosure as="div" className="w-full" defaultOpen={true}>
                     {({ open }) => (
                         <>
-                            <Disclosure.Button className="flex w-full items-center justify-between rounded-lg bg-green-200 px-4 py-2 text-left text-sm font-medium text-black hover:bg-green-300 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+                            <Disclosure.Button className="flex w-full items-center justify-between rounded-lg bg-green-200 px-4 py-2 text-left text-sm font-medium text-black transition duration-150 ease-in-out hover:bg-green-300 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
                                 <span>Comments</span>
                                 <FontAwesomeIcon icon={faChevronDown} style={{ fontSize: 18, color: 'black' }} className={open ? '' : 'rotate-180 transform'} />
                             </Disclosure.Button>

@@ -8,6 +8,7 @@ import { Menu, Transition } from '@headlessui/react';
 import WishlistItemDetailsModal from './wishlist-item-details-modal';
 import WishlistFormModal from './wishlist-form-modal';
 import ConfirmDeletionDialog from './confirm-deletion-dialog';
+import LoadingSpinner from './loading-spinner';
 
 const openInNewTab = (url: string) => {
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
@@ -47,7 +48,11 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
 
     return (
         <div className="bg-[rgba(255, 255, 255)] rounded-2xl shadow-lg">
-            {imageURLs.length > 0 && <img className="h-[20rem] w-full rounded-t-lg object-cover" src={imageURLs[0]} />}
+            {(imageURLs.length > 0 && !isLoading && <img className="h-[20rem] w-full rounded-t-lg object-cover" src={imageURLs[0]} />) || (
+                <div className="flex h-[20rem] w-full items-center justify-center rounded-t-lg bg-slate-50">
+                    <LoadingSpinner />
+                </div>
+            )}
 
             <Menu as="div" className="relative mt-2 mr-3 p-0">
                 <Menu.Button>
