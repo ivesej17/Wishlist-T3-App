@@ -9,6 +9,7 @@ import WishlistItemDetailsModal from './wishlist-item-details-modal';
 import WishlistFormModal from './wishlist-form-modal';
 import ConfirmDeletionDialog from './confirm-deletion-dialog';
 import LoadingSpinner from './loading-spinner';
+import { displayDangerToast } from '../utils/toast-functions';
 
 const openInNewTab = (url: string) => {
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
@@ -44,6 +45,8 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
     const wishlistItemDelete = async () => {
         await deleteWishlistItem.mutateAsync(props.wishlistItem.id);
         props.removeWishlistItem();
+        setDeleteDialogVisible(false);
+        displayDangerToast('Wishlist Item Deleted.');
     };
 
     return (

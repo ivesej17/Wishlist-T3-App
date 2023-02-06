@@ -59,11 +59,6 @@ const WishlistFormModal: React.FC<{
     }, []);
 
     const setNewImages = (files: File[]) => {
-        imageURLsToFiles.forEach((value, key) => URL.revokeObjectURL(key));
-
-        setImageURLsToFiles(new Map<string, File>());
-        setImageURLs([]);
-
         for (const file of files) {
             const url = URL.createObjectURL(file);
             setImageURLsToFiles((prev) => new Map([...prev, [url, file]]));
@@ -80,10 +75,16 @@ const WishlistFormModal: React.FC<{
     };
 
     const onSubmit = async (data: FormValues) => {
+        console.log(imageURLsToFiles);
+        console.log(imageURLs);
+        return;
+        
         if (imageURLsToFiles.size === 0 || imageURLs.length === 0) {
             displayDangerToast('Oh no buddy! You forgot to add an image!');
             return;
         }
+
+        setWishlistUploading(true);
 
         const wishlistItem: WishlistItem | Omit<WishlistItem, 'id'> = {
             id: props.wishlistItem?.id || undefined,
@@ -102,6 +103,7 @@ const WishlistFormModal: React.FC<{
         await updateWishlist.mutateAsync({ id: 1, updatedAt: getCurrentDateISO() });
 
         if (imageURLsToFiles.size === 0) {
+            setWishlistUploading(false);
             props.closeModal();
             props.wishlistItem ? props.modifyWishlistItem?.(newWishlistItem) : props.addWishlistItem?.(newWishlistItem);
             props.wishlistItem ? displaySuccessToast('Wishlist item updated! 🎉') : displaySuccessToast('Wishlist item added! 🎉');
@@ -127,6 +129,8 @@ const WishlistFormModal: React.FC<{
             await storeImageKey.mutateAsync(wishlistItemPhoto);
         }
 
+        setWishlistUploading(false);
+        props.closeModal();
         props.wishlistItem ? props.modifyWishlistItem?.(newWishlistItem) : props.addWishlistItem?.(newWishlistItem);
         props.wishlistItem ? displaySuccessToast('Wishlist item updated! 🎉') : displaySuccessToast('Wishlist item added! 🎉');
     };

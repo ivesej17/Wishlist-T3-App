@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
 
-const ConfirmDeletionDialog: React.FC<{ isOpen: boolean; closeModal: () => void; confirmDeletion: () => void; productName: string }> = (props) => {
+const ConfirmDeletionDialog: React.FC<{ isOpen: boolean; closeModal: () => void; confirmDeletion: () => Promise<void>; productName: string }> = (props) => {
     if (!props.isOpen) return null;
 
     return (
@@ -50,7 +50,7 @@ const ConfirmDeletionDialog: React.FC<{ isOpen: boolean; closeModal: () => void;
                                     <button
                                         type="button"
                                         className="delay-50 inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-500 transition ease-in-out hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                        onClick={() => props.confirmDeletion()}
+                                        onClick={async () => await props.confirmDeletion()}
                                     >
                                         Confirm
                                     </button>
