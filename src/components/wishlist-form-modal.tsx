@@ -75,10 +75,10 @@ const WishlistFormModal: React.FC<{
     };
 
     const onSubmit = async (data: FormValues) => {
-        console.log(imageURLsToFiles);
-        console.log(imageURLs);
-        return;
-        
+        // console.log(imageURLsToFiles);
+        // console.log(imageURLs);
+        // return;
+
         if (imageURLsToFiles.size === 0 || imageURLs.length === 0) {
             displayDangerToast('Oh no buddy! You forgot to add an image!');
             return;
@@ -179,7 +179,7 @@ const WishlistFormModal: React.FC<{
                                     {imageURLs.length > 0 &&
                                         imageURLs.map((url) => {
                                             return (
-                                                <div className="relative flex h-full w-full gap-3 overflow-x-auto">
+                                                <div className="relative flex h-full w-full gap-3 overflow-x-auto" key={url}>
                                                     <button type="button" className="absolute top-0 right-0 mt-2 mr-2" onClick={() => removeImage(url)}>
                                                         <FontAwesomeIcon icon={faCircleXmark} style={{ fontSize: 20, color: 'white' }} />
                                                     </button>

@@ -10,36 +10,27 @@ import { displayDangerToast, displaySuccessToast, displayToast } from '../utils/
 const WishlistSelect: NextPage = () => {
     const user = useSession().data?.user;
 
+    const [bellIcon, setBellIcon] = useState<Map<number, IconDefinition>>(new Map());
+
     const wishlists = api.wishlists.getAll.useQuery(undefined, {
         onSuccess: (wishlists) => {
             for (const wishlist of wishlists) {
-                setBellIsActive(bellIsActive.set(wishlist.id, true));
-                setBellIcon(bellIcon.set(wishlist.id, faBell));
+                setBellIcon((prev) => new Map([...prev, [wishlist.id, faBell]]));
             }
         },
     });
 
-    const [bellIsActive, setBellIsActive] = useState<Map<number, boolean>>(new Map());
-
-    const [bellIcon, setBellIcon] = useState<Map<number, IconDefinition>>(new Map());
-
-    const onBellClick = (e: any, wishlistID: number) => {
+    const toggleBellIcon = (e: any, wishlistID: number, wishlistName: string) => {
         e.preventDefault();
 
-        const isBellActive = bellIsActive.get(wishlistID);
+        if (bellIcon.get(wishlistID) === faBell) {
+            setBellIcon((prev) => new Map([...prev, [wishlistID, faBellSlash]]));
+            displayDangerToast(`You will no longer receive notifications for ${wishlistName}.`);
+            return;
+        }
 
-        bellIsActive.set(wishlistID, !isBellActive);
-
-        const newBellIcon = isBellActive ? faBellSlash : faBell;
-
-        bellIcon.set(wishlistID, newBellIcon);
-
-        if (isBellActive) displaySuccessToast('🔔 Notifications enabled!');
-        else displayDangerToast('🔕 Notifications disabled!');
-    };
-
-    const getBellIcon = (wishlistID: number) => {
-        return bellIcon.get(wishlistID)!;
+        setBellIcon((prev) => new Map([...prev, [wishlistID, faBell]]));
+        displaySuccessToast(`You will now receive notifications for ${wishlistName}!`);
     };
 
     return (
@@ -51,6 +42,7 @@ const WishlistSelect: NextPage = () => {
 
             <div className="flex flex-col items-center justify-center gap-8">
                 {wishlists.data &&
+                    bellIcon.size === wishlists.data.length &&
                     wishlists.data.map((w) => {
                         return (
                             <Link
@@ -72,8 +64,8 @@ const WishlistSelect: NextPage = () => {
                                         <FontAwesomeIcon icon={faArrowCircleRight} style={{ fontSize: 75, color: 'white' }} />
                                     </div>
 
-                                    <button className="absolute top-0 right-0 m-3" onClick={(e) => onBellClick(e, w.id)}>
-                                        <FontAwesomeIcon icon={getBellIcon(w.id)} style={{ fontSize: 25, color: 'white' }} />
+                                    <button className="absolute top-0 right-0 m-3" onClick={(e) => toggleBellIcon(e, w.id, w.name)}>
+                                        <FontAwesomeIcon icon={bellIcon.get(w.id)!} style={{ fontSize: 25, color: 'white' }} />
                                     </button>
                                 </div>
                             </Link>

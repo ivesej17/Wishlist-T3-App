@@ -57,13 +57,24 @@ const WishList: NextPage = () => {
                 <div className="mt-20 grid w-[98%] justify-center justify-items-center gap-5 md:grid-cols-2 xl:grid-cols-3 xs:grid-cols-1">
                     {wishlistItems.map((wishlistItem) => (
                         <div key={wishlistItem.id}>
-                            <WishlistItemCard wishlistItem={wishlistItem} removeWishlistItem={() => removeWishlistItem} key={wishlistItem.id} />
+                            <WishlistItemCard
+                                wishlistItem={wishlistItem}
+                                removeWishlistItem={() => removeWishlistItem}
+                                modifyWishlistItem={() => modifyWishlistItem}
+                                key={wishlistItem.id}
+                            />
                         </div>
                     ))}
                 </div>
             )}
 
-            <WishlistFormModal isVisible={formModalIsVisible} wishlistItem={undefined} closeModal={() => setFormModalIsVisible(false)} images={[]} addWishlistItem={() => addWishlistItem} />
+            <WishlistFormModal
+                isVisible={formModalIsVisible}
+                wishlistItem={undefined}
+                closeModal={() => setFormModalIsVisible(false)}
+                images={[]}
+                addWishlistItem={() => addWishlistItem}
+            />
         </main>
     );
 };

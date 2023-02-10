@@ -16,8 +16,10 @@ const openInNewTab = (url: string) => {
     if (newWindow) newWindow.opener = null;
 };
 
-const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistItem: () => void }> = (props) => {
-    const [imageURLs, setImageURLs] = useState<string[]>([]);
+const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistItem: () => void; modifyWishlistItem: () => void }> = (props) => {
+    const [imageFiles, setImageFiles] = useState<File[]>([]); // ImageFiles are not used for displaying images, but are used to upload images to S3.
+
+    const [imageURLs, setImageURLs] = useState<string[]>([]); // ImageURLs are used for displaying images, and are passed around to prevent managing object URLs in multiple places.
 
     const [detailsModalVisible, setDetailsModalVisible] = useState(false);
 
@@ -30,6 +32,7 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
     const { isLoading } = api.s3.getDownloadURLs.useQuery(props.wishlistItem.id, {
         onSuccess: async (downloadURLs) => {
             const images = await fetchImages(downloadURLs);
+            setImageFiles(images);
             setImageURLs(images.map((i) => window.URL.createObjectURL(i)));
         },
     });
@@ -132,7 +135,13 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
                 imageURLs={imageURLs}
             />
 
-            <WishlistFormModal isVisible={editModalIsVisible} wishlistItem={props.wishlistItem} images={[]} closeModal={() => setEditModalIsVisible(false)} />
+            <WishlistFormModal
+                isVisible={editModalIsVisible}
+                wishlistItem={props.wishlistItem}
+                images={imageFiles}
+                closeModal={() => setEditModalIsVisible(false)}
+                modifyWishlistItem={() => props.modifyWishlistItem}
+            />
 
             <ConfirmDeletionDialog
                 isOpen={deleteDialogVisible}
