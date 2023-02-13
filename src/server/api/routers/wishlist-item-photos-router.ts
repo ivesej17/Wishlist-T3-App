@@ -20,11 +20,16 @@ export const wishlistItemPhotosRouter = createTRPCRouter({
         });
     }),
 
-    delete: protectedProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
-        await ctx.prisma.wishlistItemPhoto.delete({
-            where: {
-                id: input,
-            },
+    replaceAll: protectedProcedure.input(z.object({ imageKeys: z.array(z.string()), wishlistItemID: z.number() })).mutation(async ({ ctx, input }) => {
+        await ctx.prisma.wishlistItemPhoto.deleteMany({
+            where: { wishlistItemID: input.wishlistItemID },
+        });
+
+        await ctx.prisma.wishlistItemPhoto.createMany({
+            data: input.imageKeys.map((imageKey) => ({
+                imageKey,
+                wishlistItemID: input.wishlistItemID,
+            })),
         });
     }),
 });

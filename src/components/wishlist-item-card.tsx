@@ -16,7 +16,9 @@ const openInNewTab = (url: string) => {
     if (newWindow) newWindow.opener = null;
 };
 
-const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistItem: () => void; modifyWishlistItem: () => void }> = (props) => {
+const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
+    const utils = api.useContext();
+
     const [imageFiles, setImageFiles] = useState<File[]>([]); // ImageFiles are not used for displaying images, but are used to upload images to S3.
 
     const [imageURLs, setImageURLs] = useState<string[]>([]); // ImageURLs are used for displaying images, and are passed around to prevent managing object URLs in multiple places.
@@ -27,11 +29,19 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
 
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
-    const deleteWishlistItem = api.wishlistItems.delete.useMutation();
+    const deleteWishlistItem = api.wishlistItems.delete.useMutation({
+        onMutate: (wishlistItemID) => {
+            utils.wishlistItems.getAll.setData(props.wishlistItem.wishlistID, (old) => old?.filter((i) => i.id !== wishlistItemID));
+        },
+    });
 
-    const { isLoading } = api.s3.getDownloadURLs.useQuery(props.wishlistItem.id, {
+    const { refetch: refetchImages, isLoading } = api.s3.getDownloadURLs.useQuery(props.wishlistItem.id, {
         onSuccess: async (downloadURLs) => {
             const images = await fetchImages(downloadURLs);
+
+            setImageFiles([]);
+            setImageURLs([]);
+
             setImageFiles(images);
             setImageURLs(images.map((i) => window.URL.createObjectURL(i)));
         },
@@ -45,15 +55,14 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
         };
     }, []);
 
-    const wishlistItemDelete = async () => {
-        await deleteWishlistItem.mutateAsync(props.wishlistItem.id);
-        props.removeWishlistItem();
+    const wishlistItemDelete = () => {
+        deleteWishlistItem.mutateAsync(props.wishlistItem.id);
         setDeleteDialogVisible(false);
         displayDangerToast('Wishlist Item Deleted.');
     };
 
     return (
-        <div className="bg-[rgba(255, 255, 255)] rounded-2xl shadow-lg">
+        <div className="bg-[rgba(255, 255, 255)] h-full w-full rounded-2xl shadow-lg">
             {(imageURLs.length > 0 && !isLoading && <img className="h-[20rem] w-full rounded-t-lg object-cover" src={imageURLs[0]} />) || (
                 <div className="flex h-[20rem] w-full items-center justify-center rounded-t-lg bg-slate-50">
                     <LoadingSpinner />
@@ -136,11 +145,12 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
             />
 
             <WishlistFormModal
+                wishlistID={props.wishlistItem.wishlistID}
                 isVisible={editModalIsVisible}
                 wishlistItem={props.wishlistItem}
                 images={imageFiles}
                 closeModal={() => setEditModalIsVisible(false)}
-                modifyWishlistItem={() => props.modifyWishlistItem}
+                refetchImages={refetchImages}
             />
 
             <ConfirmDeletionDialog
@@ -150,11 +160,12 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; removeWishlistIte
                 productName={props.wishlistItem.title}
             />
 
-            <div className="px-5 pb-5">
+            <div className="relative h-full px-5 pb-5">
                 <h5 className="text-2xl font-bold tracking-tight text-white md:mb-2 lg:m-0 xs:mb-3">
                     {props.wishlistItem.title} - ${props.wishlistItem.productPrice}
                 </h5>
-                <p className="mb-0 mt-3 font-normal text-slate-200">Added on {props.wishlistItem.createdAt.toLocaleDateString()}</p>
+
+                <p className="font-normal text-slate-200">Added on {props.wishlistItem.createdAt.toLocaleDateString()}</p>
             </div>
         </div>
     );

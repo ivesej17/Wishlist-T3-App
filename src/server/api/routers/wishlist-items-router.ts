@@ -18,6 +18,8 @@ const WishlistItemSchema = z.object({
 // Create router with procedure definitions.
 export const wishlistItemsRouter = createTRPCRouter({
     getAll: protectedProcedure.input(z.number()).query(({ ctx, input }) => {
+        console.log('GET ALL CALLED');
+
         return ctx.prisma.wishlistItem.findMany({
             where: { wishlistID: input },
         });
@@ -51,5 +53,7 @@ export const wishlistItemsRouter = createTRPCRouter({
                 where: { wishlistItemID: input },
             }),
         ]);
+
+        return input;
     }),
 });

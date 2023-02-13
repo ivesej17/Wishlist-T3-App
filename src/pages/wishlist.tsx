@@ -17,35 +17,28 @@ const WishList: NextPage = () => {
 
     const wishlistName = router.query.wishlistName as string;
 
-    const [wishlistItems, setWishlistItems] = useState<readonly WishlistItem[]>([]);
-
-    const { data, error, isLoading } = api.wishlistItems.getAll.useQuery(wishlistID, {
-        onSuccess: (data) => setWishlistItems(data),
+    const getWishlistItems = api.wishlistItems.getAll.useQuery(wishlistID, {
+        staleTime: 1000 * 60 * 5,
+        cacheTime: 1000 * 60 * 5,
     });
-
-    const addWishlistItem = (wishlistItem: WishlistItem) => setWishlistItems((prev) => [...prev, wishlistItem]);
-
-    const modifyWishlistItem = (wishlistItem: WishlistItem) => setWishlistItems((prev) => prev.map((w) => (w.id === wishlistItem.id ? wishlistItem : w)));
-
-    const removeWishlistItem = (wishlistItemID: number) => setWishlistItems(wishlistItems.filter((wishlistItem) => wishlistItem.id !== wishlistItemID));
 
     const [formModalIsVisible, setFormModalIsVisible] = useState(false);
 
-    if (!data || isLoading) return <div>Loading...</div>;
+    if (!getWishlistItems.data || getWishlistItems.isLoading) return <div>Loading...</div>;
 
     return (
         <main className="flex h-screen w-screen flex-col items-center overflow-y-auto overflow-x-hidden">
-            <div className="bg-[rgba(255, 255, 255, 0.18)] absolute top-0 m-3 flex items-center justify-between rounded-3xl shadow-2xl md:w-10/12 xl:w-1/2 xs:w-[95%]">
-                <button className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-300" onClick={() => router.back()}>
-                    <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'white' }} className="text-pink-400" />
+            <div className="absolute top-0 m-3 flex items-center justify-between rounded-3xl bg-slate-800 shadow-2xl md:w-10/12 xl:w-1/2 xs:w-[95%]">
+                <button className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-100" onClick={() => router.back()}>
+                    <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'rgb(249 168 212)' }} />
                 </button>
                 <h1 className="text-center text-2xl font-semibold text-slate-50">{wishlistName}</h1>
-                <button className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-300" onClick={() => setFormModalIsVisible(true)}>
-                    <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: 25, color: 'white' }} />
+                <button className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-100" onClick={() => setFormModalIsVisible(true)}>
+                    <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: 25, color: 'rgb(249 168 212)' }} />
                 </button>
             </div>
 
-            {data.length === 0 && (
+            {getWishlistItems.data.length === 0 && (
                 <div className="flex h-screen w-full flex-col items-center justify-center gap-10 overflow-hidden">
                     <h1 className="text-5xl font-bold">This wishlist is empty!</h1>
 
@@ -53,27 +46,22 @@ const WishList: NextPage = () => {
                 </div>
             )}
 
-            {data.length > 0 && (
-                <div className="mt-20 grid w-[98%] justify-center justify-items-center gap-5 md:grid-cols-2 xl:grid-cols-3 xs:grid-cols-1">
-                    {wishlistItems.map((wishlistItem) => (
-                        <div key={wishlistItem.id}>
-                            <WishlistItemCard
-                                wishlistItem={wishlistItem}
-                                removeWishlistItem={() => removeWishlistItem}
-                                modifyWishlistItem={() => modifyWishlistItem}
-                                key={wishlistItem.id}
-                            />
+            {getWishlistItems.data.length > 0 && (
+                <div className="mt-20 mb-4 grid w-[98%] items-stretch justify-items-center gap-5 md:grid-cols-2 xl:grid-cols-3 xs:grid-cols-1">
+                    {getWishlistItems.data.map((wishlistItem) => (
+                        <div key={wishlistItem.id} className="md:w-[48vw] xl:w-[30vw] xs:w-[98vw]">
+                            <WishlistItemCard wishlistItem={wishlistItem} key={wishlistItem.id} />
                         </div>
                     ))}
                 </div>
             )}
 
             <WishlistFormModal
+                wishlistID={wishlistID}
                 isVisible={formModalIsVisible}
                 wishlistItem={undefined}
                 closeModal={() => setFormModalIsVisible(false)}
                 images={[]}
-                addWishlistItem={() => addWishlistItem}
             />
         </main>
     );

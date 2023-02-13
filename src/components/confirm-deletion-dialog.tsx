@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
 
-const ConfirmDeletionDialog: React.FC<{ isOpen: boolean; closeModal: () => void; confirmDeletion: () => Promise<void>; productName: string }> = (props) => {
+const ConfirmDeletionDialog: React.FC<{ isOpen: boolean; closeModal: () => void; confirmDeletion: () => void; productName: string }> = (props) => {
     if (!props.isOpen) return null;
 
     return (

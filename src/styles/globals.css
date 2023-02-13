@@ -120,3 +120,7 @@ input[type='number'] {
         transform: rotate(360deg);
     }
 }
+
+.auto-rows-fr {
+    grid-auto-rows: 1fr;
+}

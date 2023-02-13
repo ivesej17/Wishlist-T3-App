@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import ButtonInnerLoader from './button-inner-spinner';
 import { displayDangerToast, displaySuccessToast } from '../utils/toast-functions';
-import { useMutation } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UploadInput, uploadImageToS3 } from '../utils/upload-image';
 
 type FormValues = {
@@ -19,14 +19,16 @@ type FormValues = {
 };
 
 const WishlistFormModal: React.FC<{
+    wishlistID: number;
     isVisible: boolean;
     wishlistItem: WishlistItem | undefined;
     images: File[];
     closeModal: () => void;
-    addWishlistItem?: (wishlistItem: WishlistItem) => void;
-    modifyWishlistItem?: (wishlistItem: WishlistItem) => void;
+    refetchImages?: () => void;
 }> = (props) => {
     if (!props.isVisible) return null;
+
+    const utils = api.useContext();
 
     const [infoTabSelected, setInfoTabSelected] = useState(true);
     const [imageURLs, setImageURLs] = useState<readonly string[]>([]);
@@ -35,16 +37,31 @@ const WishlistFormModal: React.FC<{
     const [wishlistUploading, setWishlistUploading] = useState(false);
 
     const updateWishlistItem = api.wishlistItems.update.useMutation();
-    const storeImageKey = api.wishlistItemPhotos.create.useMutation();
+    const replaceAllExistingImageKeys = api.wishlistItemPhotos.replaceAll.useMutation();
     const gets3UploadCredentials = api.s3.getUploadURL.useMutation();
     const updateWishlist = api.wishlists.updateTimeLastChanged.useMutation();
     const uploadImage = useMutation((uploadInput: UploadInput) => uploadImageToS3(uploadInput));
+
+    const udpateWishlistItemQueryData = (newItem: WishlistItem) => {
+        utils.wishlistItems.getAll.setData(props.wishlistID, (old) => {
+            if (!old) return old;
+
+            // Case when updating existing item.
+            if (props.wishlistItem) return old.map((oldItem) => (oldItem.id === newItem.id ? newItem : oldItem));
+
+            // Case when adding new item.
+            return [...old, newItem];
+        });
+    };
 
     const { register, handleSubmit, reset, setFocus } = useForm<FormValues>({
         defaultValues: { title: '', price: '', productLink: '', notes: '' },
     });
 
     useEffect(() => {
+        setImageURLs([]);
+        setImageURLsToFiles(new Map<string, File>());
+
         if (props.wishlistItem) {
             reset({
                 title: props.wishlistItem.title,
@@ -54,7 +71,10 @@ const WishlistFormModal: React.FC<{
             });
         }
 
+        setFocus('title');
+
         setNewImages(props.images);
+
         return () => imageURLsToFiles.forEach((value, key) => URL.revokeObjectURL(key));
     }, []);
 
@@ -75,10 +95,6 @@ const WishlistFormModal: React.FC<{
     };
 
     const onSubmit = async (data: FormValues) => {
-        // console.log(imageURLsToFiles);
-        // console.log(imageURLs);
-        // return;
-
         if (imageURLsToFiles.size === 0 || imageURLs.length === 0) {
             displayDangerToast('Oh no buddy! You forgot to add an image!');
             return;
@@ -98,46 +114,40 @@ const WishlistFormModal: React.FC<{
             wishlistID: 1,
         };
 
-        const newWishlistItem = await updateWishlistItem.mutateAsync(wishlistItem);
+        try {
+            const newWishlistItem = await updateWishlistItem.mutateAsync(wishlistItem);
 
-        await updateWishlist.mutateAsync({ id: 1, updatedAt: getCurrentDateISO() });
+            await updateWishlist.mutateAsync({ id: newWishlistItem.wishlistID, updatedAt: getCurrentDateISO() });
 
-        if (imageURLsToFiles.size === 0) {
+            const imageKeys: string[] = [];
+
+            for (const file of imageURLsToFiles.values()) {
+                const credentials = await gets3UploadCredentials.mutateAsync();
+
+                imageKeys.push(credentials.key);
+
+                await uploadImage.mutateAsync({ url: credentials.url, file });
+            }
+
+            await replaceAllExistingImageKeys.mutateAsync({ imageKeys: imageKeys, wishlistItemID: newWishlistItem.id });
+
+            if(props.refetchImages) props.refetchImages();
+
+            udpateWishlistItemQueryData(newWishlistItem);
+
             setWishlistUploading(false);
             props.closeModal();
-            props.wishlistItem ? props.modifyWishlistItem?.(newWishlistItem) : props.addWishlistItem?.(newWishlistItem);
             props.wishlistItem ? displaySuccessToast('Wishlist item updated! 🎉') : displaySuccessToast('Wishlist item added! 🎉');
-            return;
+        } catch (e) {
+            setWishlistUploading(false);
+            displayDangerToast('Oh no! Something went wrong! 😥 Try saving again.');
+            console.log('CAUGHT ERROR:', e);
         }
-
-        const imageKeys: string[] = [];
-
-        for (const file of imageURLsToFiles.values()) {
-            const credentials = await gets3UploadCredentials.mutateAsync();
-
-            imageKeys.push(credentials.key);
-
-            await uploadImage.mutateAsync({ url: credentials.url, file });
-        }
-
-        for (const key of imageKeys) {
-            const wishlistItemPhoto: Omit<WishlistItemPhoto, 'id'> = {
-                imageKey: key,
-                wishlistItemID: newWishlistItem.id,
-            };
-
-            await storeImageKey.mutateAsync(wishlistItemPhoto);
-        }
-
-        setWishlistUploading(false);
-        props.closeModal();
-        props.wishlistItem ? props.modifyWishlistItem?.(newWishlistItem) : props.addWishlistItem?.(newWishlistItem);
-        props.wishlistItem ? displaySuccessToast('Wishlist item updated! 🎉') : displaySuccessToast('Wishlist item added! 🎉');
     };
 
     return (
         <div>
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-md">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-md">
                 <div>
                     <div className="flex flex-row gap-0">
                         <div className={infoTabSelected ? 'tab-focused' : 'tab-unfocused'} onClick={() => setInfoTabSelected(true)}>
