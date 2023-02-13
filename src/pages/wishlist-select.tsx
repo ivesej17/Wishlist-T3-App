@@ -4,6 +4,7 @@ import { NextPage, InferGetServerSidePropsType } from 'next';
 import { getSession, GetSessionParams, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState, useContext } from 'react';
+import LoadingSpinner from '../components/loading-spinner';
 import { api } from '../utils/api';
 import { displayDangerToast, displaySuccessToast, displayToast } from '../utils/toast-functions';
 
@@ -38,6 +39,12 @@ const WishlistSelect: NextPage = () => {
             <div className="flex flex-col items-center justify-center">
                 <h1 className="m-4 text-3xl font-semibold">Welcome {user?.name?.split(' ')[0]}!</h1>
                 <hr className="solid mb-6 w-[32rem] xs:w-11/12"></hr>
+
+                {wishlists.isLoading && (
+                    <div>
+                        <LoadingSpinner />
+                    </div>
+                )}
             </div>
 
             <div className="flex flex-col items-center justify-center gap-8">
