@@ -2,10 +2,8 @@ import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog, Transition } from '@headlessui/react';
 import { WishlistItem } from '@prisma/client';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import WishlsitItemComments from './wishlist-item-comments';
-
-const openInNewTab = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
 
 const WishlistItemDetailsModal: React.FC<{ isVisible: boolean; wishlistItem: WishlistItem; closeModal: () => void; imageURLs: string[] }> = (props) => {
     if (!props.isVisible) return null;

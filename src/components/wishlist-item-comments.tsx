@@ -4,7 +4,6 @@ import { Disclosure } from '@headlessui/react';
 import { WishlistItemComment } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { ToastContainer } from 'react-toastify';
 import { api } from '../utils/api';
 import { getCurrentDateISO } from '../utils/time-utils';
 import { displaySuccessToast } from '../utils/toast-functions';

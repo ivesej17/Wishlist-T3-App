@@ -1,5 +1,5 @@
 import CurrencyInput from 'react-currency-input-field';
-import { WishlistItem, WishlistItemPhoto } from '@prisma/client';
+import { WishlistItem } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { api } from '../utils/api';
@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import ButtonInnerLoader from './button-inner-spinner';
 import { displayDangerToast, displaySuccessToast } from '../utils/toast-functions';
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { UploadInput, uploadImageToS3 } from '../utils/upload-image';
 
 type FormValues = {
@@ -24,16 +24,13 @@ const WishlistFormModal: React.FC<{
     wishlistItem: WishlistItem | undefined;
     images: File[];
     closeModal: () => void;
-    refetchImages?: () => void;
+    refetchImages?: () => Promise<unknown>;
 }> = (props) => {
-    if (!props.isVisible) return null;
-
     const utils = api.useContext();
 
     const [infoTabSelected, setInfoTabSelected] = useState(true);
     const [imageURLs, setImageURLs] = useState<readonly string[]>([]);
     const [imageURLsToFiles, setImageURLsToFiles] = useState(new Map<string, File>());
-
     const [wishlistUploading, setWishlistUploading] = useState(false);
 
     const updateWishlistItem = api.wishlistItems.update.useMutation();
@@ -144,6 +141,8 @@ const WishlistFormModal: React.FC<{
             console.log('CAUGHT ERROR:', e);
         }
     };
+
+    if (!props.isVisible) return null;
 
     return (
         <div>
