@@ -60,7 +60,7 @@ const WishList: NextPage = () => {
                 <>
                     {getWishlistItems.data.length === 0 && (
                         <div className="flex h-screen w-full flex-col items-center justify-center gap-10 overflow-hidden">
-                            <h1 className="text-5xl font-bold">This wishlist is empty!</h1>
+                            <h1 className="text-center text-5xl font-bold">This wishlist is empty!</h1>
 
                             <GlassButton buttonText={'Create New Entry'} onClickFunction={() => setFormModalIsVisible(true)}></GlassButton>
                         </div>
