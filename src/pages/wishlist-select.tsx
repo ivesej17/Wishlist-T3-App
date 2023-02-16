@@ -85,20 +85,20 @@ const WishlistSelect: NextPage = () => {
 
 export default WishlistSelect;
 
-export const getServerSideProps = async (context: GetSessionParams | undefined) => {
-    const session = await getSession(context);
+// export const getServerSideProps = async (context: GetSessionParams | undefined) => {
+//     const session = await getSession(context);
 
-    if (!session) {
-        return {
-            redirect: {
-                destination: '/',
-            },
-        };
-    }
+//     if (!session) {
+//         return {
+//             redirect: {
+//                 destination: '/',
+//             },
+//         };
+//     }
 
-    return {
-        props: {
-            session,
-        },
-    };
-};
+//     return {
+//         props: {
+//             session,
+//         },
+//     };
+// };
