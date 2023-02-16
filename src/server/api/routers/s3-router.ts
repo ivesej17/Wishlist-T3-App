@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure } from '../trpc';
 import * as AWS from 'aws-sdk';
 import { z } from 'zod';
 import { env } from 'process';
@@ -16,7 +16,7 @@ s3.config.update({
     },
 });
 
-const bucketUrl = env.S3_BUCKET_URL || '';
+// const bucketUrl = env.S3_BUCKET_URL || '';
 
 // Create router with procedure definitions.
 export const s3_Router = createTRPCRouter({
@@ -52,7 +52,7 @@ export const s3_Router = createTRPCRouter({
 
         const downloadURLs: string[] = [];
 
-        for(const record of photoRecords) {
+        for (const record of photoRecords) {
             const requestParams: unknown = {
                 Bucket: bucketName,
                 Key: record.imageKey,
