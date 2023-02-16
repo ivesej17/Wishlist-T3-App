@@ -73,7 +73,7 @@ const WishlistFormModal: React.FC<{
         setNewImages(props.images);
 
         return () => imageURLsToFiles.forEach((value, key) => URL.revokeObjectURL(key));
-    }, [props.wishlistItem, props.images, setFocus, reset, imageURLsToFiles]);
+    }, []);
 
     const setNewImages = (files: File[]) => {
         for (const file of files) {
