@@ -39,6 +39,8 @@ export const authOptions: NextAuthOptions = {
         async signIn({ user }) {
             if (!user.email) return false;
 
+            console.log('existing user is in db');
+
             const existingUser = await prisma.user.findFirst({ where: { email: user.email } });
 
             return existingUser !== null;
@@ -51,7 +53,7 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     secret: process.env.NEXTAUTH_SECRET || '',
-    //debug: process.env.NODE_ENV === 'development',
+    //debug: true,
 };
 
 /**

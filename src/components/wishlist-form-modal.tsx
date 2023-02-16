@@ -157,7 +157,7 @@ const WishlistFormModal: React.FC<{
                         </div>
                     </div>
                     <div className="h-[30rem] rounded-b-lg rounded-tr-lg bg-white p-6 shadow-xl ring-1 ring-gray-900/5 md:w-96 xs:w-80">
-                        <form className="relative flex h-full w-full flex-col gap-5" onSubmit={() => handleSubmit(onSubmit)}>
+                        <form className="relative flex h-full w-full flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
                             <div className={infoTabSelected ? 'flex flex-col gap-4' : 'hidden'}>
                                 <div className="w-full">
                                     <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-700">Title</label>
