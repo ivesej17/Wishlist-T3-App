@@ -13,17 +13,17 @@ const WishlistSchema = z.object({
 
 // Create router with procedure definitions.
 export const wishlistsRouter = createTRPCRouter({
-    getAll: protectedProcedure.query(({ ctx }) => {
-        return ctx.prisma.wishlist.findMany();
+    getAll: protectedProcedure.query(async ({ ctx }) => {
+        return await ctx.prisma.wishlist.findMany();
     }),
 
-    create: protectedProcedure.input(WishlistSchema).mutation(({ ctx, input }) => {
+    create: protectedProcedure.input(WishlistSchema).mutation(async ({ ctx, input }) => {
         input.id = 0;
-        ctx.prisma.wishlist.create({ data: { ...input } });
+        await ctx.prisma.wishlist.create({ data: { ...input } });
     }),
 
-    updateTimeLastChanged: protectedProcedure.input(z.object({ id: z.number(), updatedAt: z.date() })).mutation(({ ctx, input }) => {
-        ctx.prisma.wishlist.update({
+    updateTimeLastChanged: protectedProcedure.input(z.object({ id: z.number(), updatedAt: z.date() })).mutation(async ({ ctx, input }) => {
+        await ctx.prisma.wishlist.update({
             where: { id: input.id },
             data: { updatedAt: input.updatedAt },
         });
