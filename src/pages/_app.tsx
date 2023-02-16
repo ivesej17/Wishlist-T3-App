@@ -9,7 +9,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { config } from '@fortawesome/fontawesome-svg-core';
-import { Session } from 'next-auth';
+import { type Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
 

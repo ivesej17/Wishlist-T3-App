@@ -56,9 +56,9 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
     }, []);
 
     const wishlistItemDelete = () => {
-        deleteWishlistItem.mutateAsync(props.wishlistItem.id);
         setDeleteDialogVisible(false);
         displayDangerToast('Wishlist Item Deleted.');
+        deleteWishlistItem.mutate(props.wishlistItem.id);
     };
 
     return (

@@ -20,7 +20,7 @@ const getLocaleTimeString = (date: Date) => {
 const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
     const user = useSession().data?.user;
 
-    const { data, isLoading, error } = api.wishlistItemComments.get.useQuery(props.wishlistItemID);
+    const { data, isLoading } = api.wishlistItemComments.get.useQuery(props.wishlistItemID);
 
     const submitComment = api.wishlistItemComments.create.useMutation();
 
@@ -92,7 +92,7 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
                                                         <hr className="w-full border border-slate-200"></hr>
                                                     </div>
 
-                                                    <button className="cursor-pointer" onClick={() => deleteCommentClick(comment.id)}>
+                                                    <button className="cursor-pointer" onClick={async () => await deleteCommentClick(comment.id)}>
                                                         <FontAwesomeIcon icon={faTrash} style={{ fontSize: 18, color: 'red' }} className="mb-3" />
                                                     </button>
                                                 </div>
@@ -110,7 +110,7 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
 
                                     <button
                                         className="float-right mt-3 flex justify-between rounded-lg bg-green-50 px-4 py-2 text-left text-sm font-medium text-slate-900 hover:bg-green-100 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
-                                        onClick={() => submitCommentClick()}
+                                        onClick={async () => await submitCommentClick()}
                                     >
                                         <span>Submit Comment</span>
                                     </button>

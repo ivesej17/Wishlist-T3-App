@@ -1,4 +1,4 @@
-import { getSession, GetSessionParams } from 'next-auth/react';
+import { getSession, type GetSessionParams } from 'next-auth/react';
 
 export const authorizeUser = async (context: GetSessionParams | undefined) => {
     const session = await getSession(context);

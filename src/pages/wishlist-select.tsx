@@ -1,12 +1,12 @@
-import { faArrowCircleRight, faBell, faBellSlash, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faArrowCircleRight, faBell, faBellSlash, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { NextPage, InferGetServerSidePropsType } from 'next';
+import { type NextPage } from 'next';
 import { getSession, GetSessionParams, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import LoadingSpinner from '../components/loading-spinner';
 import { api } from '../utils/api';
-import { displayDangerToast, displaySuccessToast, displayToast } from '../utils/toast-functions';
+import { displayDangerToast, displaySuccessToast } from '../utils/toast-functions';
 
 const WishlistSelect: NextPage = () => {
     const user = useSession().data?.user;
@@ -21,7 +21,7 @@ const WishlistSelect: NextPage = () => {
         },
     });
 
-    const toggleBellIcon = (e: any, wishlistID: number, wishlistName: string) => {
+    const toggleBellIcon = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, wishlistID: number, wishlistName: string) => {
         e.preventDefault();
 
         if (bellIcon.get(wishlistID) === faBell) {

@@ -1,9 +1,3 @@
-import { env } from 'process';
-
-// const bucketUrl = env.S3_BUCKET_URL || '';
-
-const bucketUrl = 'https://wishlist-1dwx78.s3.us-west-2.amazonaws.com';
-
 const fetchImages = async (downloadURLs: string[]) => {
     const images: File[] = [];
 

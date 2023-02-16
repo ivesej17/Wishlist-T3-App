@@ -5,10 +5,9 @@ import WishlistFormModal from '../components/wishlist-form-modal';
 import { useState } from 'react';
 import WishlistItemCard from '../components/wishlist-item-card';
 import { useRouter } from 'next/router';
-import { WishlistItem } from '@prisma/client';
-import { getSession, GetSessionParams } from 'next-auth/react';
+import { getSession, type GetSessionParams } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faPlus, faPlusCircle, faWifi } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faPlusCircle, faWifi } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../components/loading-spinner';
 
 const WishList: NextPage = () => {
