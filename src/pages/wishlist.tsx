@@ -9,6 +9,7 @@ import { getSession, type GetSessionParams } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faPlusCircle, faWifi } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../components/loading-spinner';
+import Link from 'next/link';
 
 const WishList: NextPage = () => {
     const router = useRouter();
@@ -27,9 +28,11 @@ const WishList: NextPage = () => {
     return (
         <main className="flex h-screen w-screen flex-col items-center overflow-y-auto overflow-x-hidden">
             <div className="absolute top-0 z-10 m-3 flex items-center justify-between rounded-3xl bg-slate-800 shadow-2xl md:w-10/12 xl:w-1/2 xs:w-[95%]">
-                <button className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-100" onClick={() => router.back()}>
-                    <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'rgb(249 168 212)' }} />
-                </button>
+                <Link href="/wishlist-select" className="no-underline">
+                    <button className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-100" onClick={() => router.back()}>
+                        <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'rgb(249 168 212)' }} />
+                    </button>
+                </Link>
                 <h1 className="select-none text-center text-2xl font-semibold text-slate-50">{wishlistName}</h1>
                 <button
                     className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-100"
