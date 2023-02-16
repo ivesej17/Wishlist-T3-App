@@ -131,7 +131,7 @@ const WishlistFormModal: React.FC<{
 
             await replaceAllExistingImageKeys.mutateAsync({ imageKeys: imageKeys, wishlistItemID: newWishlistItem.id });
 
-            if(props.refetchImages) props.refetchImages();
+            if (props.refetchImages) props.refetchImages();
 
             udpateWishlistItemQueryData(newWishlistItem);
 
@@ -158,7 +158,7 @@ const WishlistFormModal: React.FC<{
                         </div>
                     </div>
                     <div className="h-[30rem] rounded-b-lg rounded-tr-lg bg-white p-6 shadow-xl ring-1 ring-gray-900/5 md:w-96 xs:w-80">
-                        <form className="flex w-full flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+                        <form className="relative flex h-full w-full flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
                             <div className={infoTabSelected ? 'flex flex-col gap-4' : 'hidden'}>
                                 <div className="w-full">
                                     <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-700">Title</label>
@@ -184,21 +184,25 @@ const WishlistFormModal: React.FC<{
                                     <textarea className="form-input" rows={4} {...register('notes')}></textarea>
                                 </div>
                             </div>
-                            <div className={infoTabSelected ? 'hidden' : 'flex w-full flex-col items-center justify-center'}>
-                                <div className="flex flex-row gap-2 overflow-x-auto overflow-y-hidden">
+                            <div className={infoTabSelected ? 'hidden' : 'absolute inset-0 flex w-full flex-col items-center justify-between'}>
+                                <div className="absolute left-0 right-0 grid grid-cols-3 justify-items-center gap-2 overflow-x-auto overflow-y-hidden">
                                     {imageURLs.length > 0 &&
                                         imageURLs.map((url) => {
                                             return (
-                                                <div className="relative flex h-full w-full gap-3 overflow-x-auto" key={url}>
+                                                <div className="relative" key={url}>
                                                     <button type="button" className="absolute top-0 right-0 mt-2 mr-2" onClick={() => removeImage(url)}>
                                                         <FontAwesomeIcon icon={faCircleXmark} style={{ fontSize: 20, color: 'white' }} />
                                                     </button>
-                                                    <img src={url} className="h-72 rounded-lg" />
+                                                    <img src={url} className="h-36 rounded-lg object-cover" />
                                                 </div>
                                             );
                                         })}
                                 </div>
-                                <div className="bg-grey-lighter flex w-full items-center justify-center">
+                                <div
+                                    className={`bg-grey-lighter flex w-full items-center justify-center ${
+                                        imageURLs.length > 0 ? 'absolute bottom-0 mb-3' : ''
+                                    }`}
+                                >
                                     <label className="text-blue border-blue hover:bg-blue flex w-full cursor-pointer flex-col items-center rounded-lg border bg-white px-4 py-6 uppercase tracking-wide shadow-lg transition duration-200 hover:text-pink-400">
                                         <svg className="h-8 w-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                             <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
