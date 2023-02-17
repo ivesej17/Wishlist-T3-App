@@ -108,7 +108,7 @@ const WishlistFormModal: React.FC<{
             productPrice: parseFloat(data.price.substring(1)),
             purchased: false,
             title: data.title,
-            wishlistID: 1,
+            wishlistID: props.wishlistID,
         };
 
         try {
