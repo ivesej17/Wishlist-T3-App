@@ -35,12 +35,9 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
         },
     });
 
-    const { refetch: refetchImages, isLoading } = api.s3.getDownloadURLs.useQuery(props.wishlistItem.id, {
+    const { refetch: refetchImages, isLoading: imagesLoading } = api.s3.getDownloadURLs.useQuery(props.wishlistItem.id, {
         onSuccess: async (downloadURLs) => {
             const images = await fetchImages(downloadURLs);
-
-            setImageFiles([]);
-            setImageURLs([]);
 
             setImageFiles(images);
             setImageURLs(images.map((i) => window.URL.createObjectURL(i)));
@@ -63,7 +60,7 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
 
     return (
         <div className="bg-[rgba(255, 255, 255)] h-full w-full rounded-2xl shadow-lg">
-            {(imageURLs.length > 0 && !isLoading && <img className="h-[20rem] w-full rounded-t-lg object-cover" src={imageURLs[0]} />) || (
+            {(imageURLs.length > 0 && !imagesLoading && <img className="h-[20rem] w-full rounded-t-lg object-cover" src={imageURLs[0]} />) || (
                 <div className="flex h-[20rem] w-full items-center justify-center rounded-t-lg bg-slate-50">
                     <LoadingSpinner />
                 </div>
@@ -113,8 +110,9 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
                                 <button
                                     className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
                                     onClick={() => setEditModalIsVisible(true)}
+                                    disabled={imagesLoading}
                                 >
-                                    <div className="flex flex-row gap-2">
+                                    <div className={`flex flex-row gap-2 ${imagesLoading ? 'text-neutral-400' : ''}`}>
                                         <FontAwesomeIcon icon={faPencil} style={{ fontSize: 25, color: 'rgb(82 82 82)' }} />
                                         <p className="font-semibold text-neutral-700">Edit</p>
                                     </div>

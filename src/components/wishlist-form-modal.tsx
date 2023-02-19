@@ -73,9 +73,11 @@ const WishlistFormModal: React.FC<{
         setNewImages(props.images);
 
         return () => imageURLsToFiles.forEach((value, key) => URL.revokeObjectURL(key));
-    }, []);
+    }, [props.isVisible]);
 
     const setNewImages = (files: File[]) => {
+        console.log('images from props:', props.images);
+
         for (const file of files) {
             const url = URL.createObjectURL(file);
             setImageURLsToFiles((prev) => new Map([...prev, [url, file]]));
@@ -89,6 +91,13 @@ const WishlistFormModal: React.FC<{
         setImageURLs((prev) => prev.filter((url) => url !== imageUrl));
 
         URL.revokeObjectURL(imageUrl);
+    };
+
+    const dismissModal = () => {
+        setImageURLs([]);
+        setImageURLsToFiles(new Map<string, File>());
+        reset();
+        props.closeModal();
     };
 
     const onSubmit = async (data: FormValues) => {
@@ -133,7 +142,9 @@ const WishlistFormModal: React.FC<{
             udpateWishlistItemQueryData(newWishlistItem);
 
             setWishlistUploading(false);
-            props.closeModal();
+
+            dismissModal();
+
             props.wishlistItem ? displaySuccessToast('Wishlist item updated! 🎉') : displaySuccessToast('Wishlist item added! 🎉');
         } catch (e) {
             setWishlistUploading(false);
@@ -221,7 +232,7 @@ const WishlistFormModal: React.FC<{
                                     <button
                                         className="secondary-button transition duration-200 ease-in-out"
                                         type="button"
-                                        onClick={() => props.closeModal()}
+                                        onClick={() => dismissModal()}
                                         disabled={wishlistUploading}
                                     >
                                         Cancel
