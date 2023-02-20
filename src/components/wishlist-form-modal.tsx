@@ -56,6 +56,8 @@ const WishlistFormModal: React.FC<{
     });
 
     useEffect(() => {
+        if(!props.isVisible) return;
+        
         setImageURLs([]);
         setImageURLsToFiles(new Map<string, File>());
 

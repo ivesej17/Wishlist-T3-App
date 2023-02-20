@@ -68,6 +68,15 @@ hr.solid {
     bottom: 0;
 }
 
+@media only screen and (max-width: 900px) {
+    /* Tailwind focus:outline style not applying to mobile. This should fix it. */
+    input:focus {
+        outline-color: #f9a8d4;
+        outline-style: solid;
+        outline-width: 2px;
+    }
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

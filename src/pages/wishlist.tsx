@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import { api } from '../utils/api';
 import GlassButton from '../components/glass-button';
 import WishlistFormModal from '../components/wishlist-form-modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import WishlistItemCard from '../components/wishlist-item-card';
 import { useRouter } from 'next/router';
 import { getSession, type GetSessionParams } from 'next-auth/react';
@@ -10,13 +10,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faPlusCircle, faWifi } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../components/loading-spinner';
 import Link from 'next/link';
+import { useWishlistOwnerStore } from '../utils/zustand-stores';
 
 const WishList: NextPage = () => {
+    const wishlistOwnerStore = useWishlistOwnerStore();
+
     const router = useRouter();
 
     const wishlistID = parseInt(router.query.wishlistID as string);
 
     const wishlistName = router.query.wishlistName as string;
+
+    const getWishlist = api.wishlists.getOne.useQuery(wishlistID, {
+        onSuccess: (wishlist) => (wishlist ? wishlistOwnerStore.setWishlistOwnerName(wishlist.listOwner) : null),
+    });
 
     const getWishlistItems = api.wishlistItems.getAll.useQuery(wishlistID, {
         staleTime: 1000 * 60 * 5,
@@ -33,7 +40,7 @@ const WishList: NextPage = () => {
                         <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'rgb(249 168 212)' }} />
                     </button>
                 </Link>
-                <h1 className="select-none text-center text-2xl font-semibold text-slate-50">{wishlistName}</h1>
+                <h1 className="select-none text-center text-2xl font-semibold text-slate-50">{getWishlist.data?.name ?? wishlistName}</h1>
                 <button
                     className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-100"
                     onClick={() => setFormModalIsVisible(true)}
@@ -43,20 +50,20 @@ const WishList: NextPage = () => {
                 </button>
             </div>
 
-            {getWishlistItems.isLoading && (
+            {(getWishlistItems.isLoading || getWishlist.isLoading) && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <LoadingSpinner />
                 </div>
             )}
 
-            {getWishlistItems.error && (
+            {(getWishlistItems.error || getWishlist.error) && !getWishlistItems.data && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                     <FontAwesomeIcon icon={faWifi} style={{ fontSize: 50, color: 'white' }} />
                     <h1 className="mx-1 select-none text-center text-2xl font-semibold">Looks like there was a connection error! Please try again.</h1>
                 </div>
             )}
 
-            {getWishlistItems.data && (
+            {getWishlistItems.data && getWishlist.data && (
                 <>
                     {getWishlistItems.data.length === 0 && (
                         <div className="flex h-screen w-full flex-col items-center justify-center gap-10 overflow-hidden">

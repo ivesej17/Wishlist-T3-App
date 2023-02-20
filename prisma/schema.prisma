@@ -8,10 +8,11 @@ datasource db {
 }
 
 model Wishlist {
-  id        Int      @id @default(autoincrement())
-  updatedAt DateTime @updatedAt
-  name      String   @db.VarChar(255)
-  listOwner String   @db.VarChar(255)
+  id             Int      @id @default(autoincrement())
+  updatedAt      DateTime @updatedAt
+  name           String   @db.VarChar(255)
+  listOwner      String   @db.VarChar(255)
+  listOwnerEmail String   @db.VarChar(255)
 }
 
 model WishlistItem {
@@ -39,6 +40,7 @@ model WishlistItemComment {
   comment        String   @db.VarChar(1000)
   wishlistItemID Int
   byUser         String   @db.VarChar(255)
+  commenterEmail String   @db.VarChar(255)
 }
 
 model WishlistSubscription {

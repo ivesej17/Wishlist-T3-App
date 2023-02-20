@@ -7,8 +7,11 @@ import { useState } from 'react';
 import LoadingSpinner from '../components/loading-spinner';
 import { api } from '../utils/api';
 import { displayDangerToast, displaySuccessToast } from '../utils/toast-functions';
+import { useWishlistOwnerStore } from '../utils/zustand-stores';
 
 const WishlistSelect: NextPage = () => {
+    const wishlistOwnerStore = useWishlistOwnerStore();
+
     const user = useSession().data?.user;
 
     const [bellIcon, setBellIcon] = useState<Map<number, IconDefinition>>(new Map());
@@ -34,6 +37,8 @@ const WishlistSelect: NextPage = () => {
         displaySuccessToast(`You will now receive notifications for ${wishlistName}!`);
     };
 
+    const linkClick = (listOwner: string) => wishlistOwnerStore.setWishlistOwnerName(listOwner);
+
     return (
         <main className="min-h-screen overflow-hidden">
             <div className="flex flex-col items-center justify-center">
@@ -58,6 +63,7 @@ const WishlistSelect: NextPage = () => {
                                     query: { wishlistID: w.id, wishlistName: w.name },
                                 }}
                                 key={w.id}
+                                onClick={() => linkClick(w.listOwner)}
                                 className="glass-button relative h-full w-[32rem] cursor-pointer rounded-3xl p-5 no-underline shadow-lg transition duration-200 hover:bg-purple-500 xs:w-11/12"
                             >
                                 <div className="flex flex-row justify-between">

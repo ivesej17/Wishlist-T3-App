@@ -34,7 +34,8 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
             createdAt: getCurrentDateISO(),
             updatedAt: getCurrentDateISO(),
             wishlistItemID: props.wishlistItemID,
-            byUser: user?.name || 'Anonymous',
+            byUser: user?.name ?? 'Anonymous',
+            commenterEmail: user?.email ?? 'Anonymous',
         };
 
         const createdComment = await submitComment.mutateAsync(newComment);
@@ -92,9 +93,11 @@ const WishlsitItemComments: React.FC<{ wishlistItemID: number }> = (props) => {
                                                         <hr className="w-full border border-slate-200"></hr>
                                                     </div>
 
-                                                    <button className="cursor-pointer" onClick={async () => await deleteCommentClick(comment.id)}>
-                                                        <FontAwesomeIcon icon={faTrash} style={{ fontSize: 18, color: 'red' }} className="mb-3" />
-                                                    </button>
+                                                    {user?.email === comment.commenterEmail && (
+                                                        <button className="cursor-pointer" onClick={async () => await deleteCommentClick(comment.id)}>
+                                                            <FontAwesomeIcon icon={faTrash} style={{ fontSize: 18, color: 'red' }} className="mb-3" />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             );
                                         })}

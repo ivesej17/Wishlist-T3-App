@@ -10,6 +10,7 @@ const WishlistItemCommentSchema = z.object({
     createdAt: z.date(),
     comment: z.string(),
     byUser: z.string(),
+    commenterEmail: z.string(),
 });
 
 // Create router with procedure definitions.

@@ -10,6 +10,8 @@ import WishlistFormModal from './wishlist-form-modal';
 import ConfirmDeletionDialog from './confirm-deletion-dialog';
 import LoadingSpinner from './loading-spinner';
 import { displayDangerToast } from '../utils/toast-functions';
+import { getSession, GetSessionParams, useSession } from 'next-auth/react';
+import { useWishlistOwnerStore } from '../utils/zustand-stores';
 
 const openInNewTab = (url: string) => {
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
@@ -17,7 +19,11 @@ const openInNewTab = (url: string) => {
 };
 
 const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
+    const session = useSession();
+
     const utils = api.useContext();
+
+    const wishlistOwnerStore = useWishlistOwnerStore();
 
     const [imageFiles, setImageFiles] = useState<File[]>([]); // ImageFiles are not used for displaying images, but are used to upload images to S3.
 
@@ -106,30 +112,34 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
                                 </button>
                             </Menu.Item>
 
-                            <Menu.Item>
-                                <button
-                                    className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
-                                    onClick={() => setEditModalIsVisible(true)}
-                                    disabled={imagesLoading}
-                                >
-                                    <div className={`flex flex-row gap-2 ${imagesLoading ? 'text-neutral-400' : ''}`}>
-                                        <FontAwesomeIcon icon={faPencil} style={{ fontSize: 25, color: 'rgb(82 82 82)' }} />
-                                        <p className="font-semibold text-neutral-700">Edit</p>
-                                    </div>
-                                </button>
-                            </Menu.Item>
+                            {session.data?.user.name === wishlistOwnerStore.wishlistOwnerName && (
+                                <>
+                                    <Menu.Item>
+                                        <button
+                                            className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
+                                            onClick={() => setEditModalIsVisible(true)}
+                                            disabled={imagesLoading}
+                                        >
+                                            <div className={`flex flex-row gap-2 ${imagesLoading ? 'text-neutral-400' : ''}`}>
+                                                <FontAwesomeIcon icon={faPencil} style={{ fontSize: 25, color: 'rgb(82 82 82)' }} />
+                                                <p className="font-semibold text-neutral-700">Edit</p>
+                                            </div>
+                                        </button>
+                                    </Menu.Item>
 
-                            <Menu.Item>
-                                <button
-                                    className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-red-100"
-                                    onClick={() => setDeleteDialogVisible(true)}
-                                >
-                                    <div className="flex flex-row gap-2">
-                                        <FontAwesomeIcon icon={faTrash} style={{ fontSize: 25, color: 'rgb(239 68 68)' }} />
-                                        <p className="font-semibold text-red-500">Delete</p>
-                                    </div>
-                                </button>
-                            </Menu.Item>
+                                    <Menu.Item>
+                                        <button
+                                            className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-red-100"
+                                            onClick={() => setDeleteDialogVisible(true)}
+                                        >
+                                            <div className="flex flex-row gap-2">
+                                                <FontAwesomeIcon icon={faTrash} style={{ fontSize: 25, color: 'rgb(239 68 68)' }} />
+                                                <p className="font-semibold text-red-500">Delete</p>
+                                            </div>
+                                        </button>
+                                    </Menu.Item>
+                                </>
+                            )}
                         </div>
                     </Menu.Items>
                 </Transition>
