@@ -64,7 +64,7 @@ const WishlistSelect: NextPage = () => {
                                 }}
                                 key={w.id}
                                 onClick={() => linkClick(w.listOwner)}
-                                className="glass-button relative h-full w-[32rem] cursor-pointer rounded-3xl p-5 no-underline shadow-lg transition duration-200 hover:bg-purple-500 xs:w-11/12"
+                                className="relative h-full w-[32rem] cursor-pointer rounded-3xl border-2 border-slate-800 p-5 no-underline shadow-lg transition duration-200 hover:border-indigo-500 hover:bg-indigo-500 xs:w-11/12"
                             >
                                 <div className="flex flex-row justify-between">
                                     <div className="flex flex-col">
