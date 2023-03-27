@@ -1,11 +1,11 @@
-import { NextPage } from 'next';
+import { InferGetServerSidePropsType, NextPage } from 'next';
 import { api } from '../utils/api';
-import GlassButton from '../components/glass-button';
+import button from '../components/glass-button';
 import WishlistFormModal from '../components/wishlist-form-modal';
 import { useEffect, useState } from 'react';
 import WishlistItemCard from '../components/wishlist-item-card';
 import { useRouter } from 'next/router';
-import { getSession, type GetSessionParams } from 'next-auth/react';
+import { getSession, useSession, type GetSessionParams } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faPlusCircle, faWifi } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../components/loading-spinner';
@@ -13,6 +13,8 @@ import Link from 'next/link';
 import { useWishlistOwnerStore } from '../utils/zustand-stores';
 
 const WishList: NextPage = () => {
+    const session = useSession();
+
     const wishlistOwnerStore = useWishlistOwnerStore();
 
     const router = useRouter();
@@ -34,20 +36,14 @@ const WishList: NextPage = () => {
 
     return (
         <main className="flex h-screen w-screen flex-col items-center overflow-y-auto overflow-x-hidden">
-            <div className="absolute top-0 z-10 m-3 flex items-center justify-between rounded-3xl bg-slate-800 shadow-2xl md:w-10/12 xl:w-1/2 xs:w-[95%]">
+            <div className="absolute top-0 z-10 m-3 flex items-center justify-between md:w-10/12 xl:w-1/2 xs:w-[95%]">
                 <Link href="/wishlist-select" className="no-underline">
-                    <button className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-100" onClick={() => router.back()}>
-                        <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'rgb(249 168 212)' }} />
+                    <button className="rounded-full p-3 transition duration-150 ease-in-out" onClick={() => router.back()}>
+                        <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'rgb(241 245 249)' }} />
                     </button>
                 </Link>
                 <h1 className="select-none text-center text-2xl font-semibold text-slate-50">{getWishlist.data?.name ?? wishlistName}</h1>
-                <button
-                    className="rounded-full p-3 transition duration-150 ease-in-out hover:bg-pink-100"
-                    onClick={() => setFormModalIsVisible(true)}
-                    disabled={getWishlistItems.error != null}
-                >
-                    <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: 25, color: 'rgb(249 168 212)' }} />
-                </button>
+                <div></div>
             </div>
 
             {(getWishlistItems.isLoading || getWishlist.isLoading) && (
@@ -69,15 +65,22 @@ const WishList: NextPage = () => {
                         <div className="flex h-screen w-full flex-col items-center justify-center gap-10 overflow-hidden">
                             <h1 className="text-center text-5xl font-bold">This wishlist is empty!</h1>
 
-                            <GlassButton buttonText={'Create New Entry'} onClickFunction={() => setFormModalIsVisible(true)}></GlassButton>
+                            {session.data?.user?.email === getWishlist.data.listOwnerEmail && (
+                                <button
+                                    onClick={() => setFormModalIsVisible(true)}
+                                    className="inline-flex w-[15rem] items-center justify-center rounded-lg bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-indigo-600"
+                                >
+                                    Create New Entry
+                                </button>
+                            )}
                         </div>
                     )}
 
                     {getWishlistItems.data.length > 0 && (
-                        <div className="mt-20 mb-4 grid w-[98%] items-stretch justify-items-center gap-5 md:grid-cols-2 xl:grid-cols-3 xs:grid-cols-1">
+                        <div className="mt-20 mb-4 flex w-[95%] flex-col justify-center gap-10 xl:w-1/2">
                             {getWishlistItems.data.map((wishlistItem) => (
-                                <div key={wishlistItem.id} className="md:w-[48vw] xl:w-[30vw] xs:w-[98vw]">
-                                    <WishlistItemCard wishlistItem={wishlistItem} key={wishlistItem.id} />
+                                <div key={wishlistItem.id}>
+                                    <WishlistItemCard wishlistItem={wishlistItem} key={wishlistItem.id} listOwnerEmail={session.data?.user.email} />
                                 </div>
                             ))}
                         </div>

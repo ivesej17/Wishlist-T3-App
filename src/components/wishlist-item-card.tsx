@@ -18,8 +18,10 @@ const openInNewTab = (url: string) => {
     if (newWindow) newWindow.opener = null;
 };
 
-const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
+const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; listOwnerEmail: string | null | undefined }> = (props) => {
     const session = useSession();
+
+    console.log(session, props.listOwnerEmail);
 
     const utils = api.useContext();
 
@@ -65,85 +67,50 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
     };
 
     return (
-        <div className="bg-[rgba(255, 255, 255)] h-full w-full rounded-2xl shadow-lg">
-            {(imageURLs.length > 0 && !imagesLoading && <img className="h-[20rem] w-full rounded-t-lg object-cover" src={imageURLs[0]} />) || (
-                <div className="flex h-[20rem] w-full items-center justify-center rounded-t-lg bg-slate-50">
-                    <LoadingSpinner />
+        <div className="flex w-full items-center justify-center gap-5">
+            <div>
+                {imageURLs.length > 0 && !imagesLoading && <img className="h-[17rem] w-[17rem] rounded-3xl rounded-bl-3xl object-cover" src={imageURLs[0]} />}
+            </div>
+
+            <div className="relative h-[17rem] w-full rounded-3xl rounded-br-3xl border-slate-800 shadow-lg">
+                <div className="ml-4 mt-2">
+                    <h5 className="w-4/5 text-2xl font-bold tracking-tight text-white">{props.wishlistItem.title}</h5>
+
+                    <p>${props.wishlistItem.productPrice}</p>
+
+                    <p className="mt-2 font-normal text-slate-200">Added on {props.wishlistItem.createdAt.toLocaleDateString()}</p>
                 </div>
-            )}
 
-            <Menu as="div" className="relative mt-2 mr-3 p-0">
-                <Menu.Button>
-                    <FontAwesomeIcon icon={faEllipsisH} style={{ fontSize: 25, color: 'white' }} className="absolute top-0 right-0 cursor-pointer" />
-                </Menu.Button>
-
-                <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-1"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-1"
+                <button
+                    className="absolute top-0 right-0 mt-2 mr-2 rounded-lg p-3 transition duration-200 ease-in-out hover:bg-slate-400"
+                    onClick={() => setDeleteDialogVisible(true)}
                 >
-                    <Menu.Items className="absolute right-0 z-10 -translate-y-[calc(100%+25px)] rounded-2xl bg-white p-3 shadow-xl">
-                        <div className="flex flex-col items-start gap-1">
-                            <Menu.Item>
-                                <button
-                                    className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
-                                    onClick={() => setDetailsModalVisible(true)}
-                                >
-                                    <div className="flex flex-row gap-2">
-                                        <FontAwesomeIcon icon={faRectangleList} style={{ fontSize: 25, color: 'rgb(82 82 82)' }} />
-                                        <p className="font-semibold text-neutral-700">See Details</p>
-                                    </div>
-                                </button>
-                            </Menu.Item>
+                    <div className="flex flex-row gap-2">
+                        <FontAwesomeIcon icon={faTrash} style={{ fontSize: 25, color: 'rgb(241 245 249)' }} />
+                    </div>
+                </button>
 
-                            <Menu.Item>
-                                <button
-                                    className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
-                                    onClick={() => openInNewTab(props.wishlistItem.productLink)}
-                                >
-                                    <div className="flex flex-row gap-2">
-                                        <FontAwesomeIcon icon={faUpRightFromSquare} style={{ fontSize: 25, color: 'rgb(82 82 82)' }} />
-                                        <p className="font-semibold text-neutral-700">Go To Product</p>
-                                    </div>
-                                </button>
-                            </Menu.Item>
+                <div className="absolute bottom-0 right-0 mb-3 mr-3">
+                    <div className="flex gap-3">
+                        {session.data?.user.email === props.listOwnerEmail && (
+                            <button
+                                type="button"
+                                className="inline-flex items-center rounded-lg bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-indigo-600"
+                            >
+                                Edit
+                            </button>
+                        )}
 
-                            {session.data?.user.name === wishlistOwnerStore.wishlistOwnerName && (
-                                <>
-                                    <Menu.Item>
-                                        <button
-                                            className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-neutral-200"
-                                            onClick={() => setEditModalIsVisible(true)}
-                                            disabled={imagesLoading}
-                                        >
-                                            <div className={`flex flex-row gap-2 ${imagesLoading ? 'text-neutral-400' : ''}`}>
-                                                <FontAwesomeIcon icon={faPencil} style={{ fontSize: 25, color: 'rgb(82 82 82)' }} />
-                                                <p className="font-semibold text-neutral-700">Edit</p>
-                                            </div>
-                                        </button>
-                                    </Menu.Item>
-
-                                    <Menu.Item>
-                                        <button
-                                            className="w-full rounded-lg p-3 transition duration-200 ease-in-out hover:bg-red-100"
-                                            onClick={() => setDeleteDialogVisible(true)}
-                                        >
-                                            <div className="flex flex-row gap-2">
-                                                <FontAwesomeIcon icon={faTrash} style={{ fontSize: 25, color: 'rgb(239 68 68)' }} />
-                                                <p className="font-semibold text-red-500">Delete</p>
-                                            </div>
-                                        </button>
-                                    </Menu.Item>
-                                </>
-                            )}
-                        </div>
-                    </Menu.Items>
-                </Transition>
-            </Menu>
+                        <button
+                            onClick={() => setDetailsModalVisible(true)}
+                            type="button"
+                            className="inline-flex items-center rounded-lg bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-indigo-600"
+                        >
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <WishlistItemDetailsModal
                 isVisible={detailsModalVisible}
@@ -167,14 +134,6 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem }> = (props) => {
                 confirmDeletion={wishlistItemDelete}
                 productName={props.wishlistItem.title}
             />
-
-            <div className="relative h-full px-5 pb-5">
-                <h5 className="text-2xl font-bold tracking-tight text-white md:mb-2 lg:m-0 xs:mb-3">
-                    {props.wishlistItem.title} - ${props.wishlistItem.productPrice}
-                </h5>
-
-                <p className="font-normal text-slate-200">Added on {props.wishlistItem.createdAt.toLocaleDateString()}</p>
-            </div>
         </div>
     );
 };
