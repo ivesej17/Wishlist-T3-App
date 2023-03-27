@@ -21,11 +21,7 @@ const openInNewTab = (url: string) => {
 const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; listOwnerEmail: string | null | undefined }> = (props) => {
     const session = useSession();
 
-    console.log(session, props.listOwnerEmail);
-
     const utils = api.useContext();
-
-    const wishlistOwnerStore = useWishlistOwnerStore();
 
     const [imageFiles, setImageFiles] = useState<File[]>([]); // ImageFiles are not used for displaying images, but are used to upload images to S3.
 
