@@ -94,6 +94,7 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; listOwnerEmail: s
                     <div className="flex gap-3">
                         {session.data?.user.email === props.listOwnerEmail && (
                             <button
+                                onClick={() => setEditModalIsVisible(true)}
                                 type="button"
                                 className="inline-flex items-center rounded-lg bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-indigo-600"
                             >
