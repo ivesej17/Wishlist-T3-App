@@ -47,14 +47,12 @@ const WishList: NextPage = () => {
                 </Link>
                 <h1 className="select-none text-center text-2xl font-semibold text-slate-50">{getWishlist.data?.name ?? wishlistName}</h1>
                 {session.data?.user?.email === getWishlist.data?.listOwnerEmail && (
-                    <Link href="/wishlist-select" className="absolute right-2 no-underline">
-                        <button
-                            className="flex items-center justify-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-indigo-400"
-                            onClick={() => router.back()}
-                        >
-                            <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: 25, color: 'rgb(241 245 249)' }} />
-                        </button>
-                    </Link>
+                    <button
+                        className="absolute right-2 flex items-center justify-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-indigo-400"
+                        onClick={() => setFormModalIsVisible(true)}
+                    >
+                        <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: 25, color: 'rgb(241 245 249)' }} />
+                    </button>
                 )}
             </div>
 
