@@ -66,6 +66,7 @@ const WishlistItemCard: React.FC<{ wishlistItem: WishlistItem; listOwnerEmail: s
         <div className="flex w-full items-center justify-center gap-5">
             <div>
                 {imageURLs.length > 0 && !imagesLoading && <img className="h-[17rem] w-[17rem] rounded-3xl rounded-bl-3xl object-cover" src={imageURLs[0]} />}
+                {imagesLoading && <LoadingSpinner />}
             </div>
 
             <div className="relative h-[17rem] w-full rounded-3xl rounded-br-3xl border-slate-800 shadow-lg">
