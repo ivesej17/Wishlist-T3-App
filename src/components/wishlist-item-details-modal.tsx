@@ -45,15 +45,9 @@ const WishlistItemDetailsModal: React.FC<{ isVisible: boolean; wishlistItem: Wis
 
                                 <p className="text-slate-500">${props.wishlistItem.productPrice}</p>
 
-                                <div className={`mt-4 grid justify-items-center gap-5 ${props.imageURLs.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                                <div className="mt-4 grid grid-cols-2 items-center justify-items-center gap-3">
                                     {props.imageURLs.map((url) => {
-                                        return (
-                                            <img
-                                                className={`h-64 rounded-lg object-cover ${props.imageURLs.length > 1 ? 'w-64' : 'w-full'}`}
-                                                src={url}
-                                                key={url}
-                                            ></img>
-                                        );
+                                        return <img className="rounded-lg border-2 border-slate-100 object-cover" src={url} key={url}></img>;
                                     })}
                                 </div>
 

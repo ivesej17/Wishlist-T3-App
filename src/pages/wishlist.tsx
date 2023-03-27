@@ -7,7 +7,7 @@ import WishlistItemCard from '../components/wishlist-item-card';
 import { useRouter } from 'next/router';
 import { getSession, useSession, type GetSessionParams } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faPlusCircle, faWifi } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faPlusCircle, faPlusSquare, faWifi } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../components/loading-spinner';
 import Link from 'next/link';
 import { useWishlistOwnerStore } from '../utils/zustand-stores';
@@ -36,14 +36,26 @@ const WishList: NextPage = () => {
 
     return (
         <main className="flex h-screen w-screen flex-col items-center overflow-y-auto overflow-x-hidden">
-            <div className="absolute top-0 z-10 m-3 flex items-center justify-between md:w-10/12 xl:w-1/2 xs:w-[95%]">
-                <Link href="/wishlist-select" className="no-underline">
-                    <button className="rounded-full p-3 transition duration-150 ease-in-out" onClick={() => router.back()}>
+            <div className="relative mt-3 flex w-11/12 items-center justify-center rounded-xl bg-indigo-900 py-2 xl:w-1/2">
+                <Link href="/wishlist-select" className="absolute left-2 no-underline">
+                    <button
+                        className="flex items-center justify-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-indigo-400"
+                        onClick={() => router.back()}
+                    >
                         <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 25, color: 'rgb(241 245 249)' }} />
                     </button>
                 </Link>
                 <h1 className="select-none text-center text-2xl font-semibold text-slate-50">{getWishlist.data?.name ?? wishlistName}</h1>
-                <div></div>
+                {session.data?.user?.email === getWishlist.data?.listOwnerEmail && (
+                    <Link href="/wishlist-select" className="absolute right-2 no-underline">
+                        <button
+                            className="flex items-center justify-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-indigo-400"
+                            onClick={() => router.back()}
+                        >
+                            <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: 25, color: 'rgb(241 245 249)' }} />
+                        </button>
+                    </Link>
+                )}
             </div>
 
             {(getWishlistItems.isLoading || getWishlist.isLoading) && (
@@ -77,13 +89,24 @@ const WishList: NextPage = () => {
                     )}
 
                     {getWishlistItems.data.length > 0 && (
-                        <div className="mt-20 mb-4 flex w-[95%] flex-col justify-center gap-10 xl:w-1/2">
-                            {getWishlistItems.data.map((wishlistItem) => (
-                                <div key={wishlistItem.id}>
-                                    <WishlistItemCard wishlistItem={wishlistItem} key={wishlistItem.id} listOwnerEmail={session.data?.user.email} />
-                                </div>
-                            ))}
-                        </div>
+                        <>
+                            <div className="mt-5 mb-4 flex w-[95%] flex-col justify-center gap-10 xl:w-1/2">
+                                {getWishlistItems.data.map((wishlistItem) => (
+                                    <div key={wishlistItem.id}>
+                                        <WishlistItemCard wishlistItem={wishlistItem} key={wishlistItem.id} listOwnerEmail={session.data?.user.email} />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {session.data?.user?.email === getWishlist.data.listOwnerEmail && (
+                                <button
+                                    onClick={() => setFormModalIsVisible(true)}
+                                    className="my-5 inline-flex w-1/2 items-center justify-center rounded-lg bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-indigo-600"
+                                >
+                                    Add New Item
+                                </button>
+                            )}
+                        </>
                     )}
 
                     <WishlistFormModal
