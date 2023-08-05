@@ -104,7 +104,7 @@ const WishlistFormModal: React.FC<{
 
     const onSubmit = async (data: FormValues) => {
         if (imageURLsToFiles.size === 0 || imageURLs.length === 0) {
-            displayDangerToast('Oh no buddy! You forgot to add an image!');
+            displayDangerToast('Oh no! You forgot to add an image!');
             return;
         }
 
